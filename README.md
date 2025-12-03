@@ -1,5 +1,5 @@
 # DenTec TimeCase
-The DenTec TimeCase solution is a modified version of TimeCase by Interactive32 with serveral fixes, invoiced and ATT tracking and optional project linking so you can commit time without having to have an open project.
+The DenTec TimeCase solution is a modified version of TimeCase by Interactive32 with serveral fixes, invoiced and ATT tracking, PWA mode for mobile and optional project linking so you can commit time without having to have an open project.
 
 # TimeCase
 TimeCase is a free, open-source, self-hosted, time tracking web application.
