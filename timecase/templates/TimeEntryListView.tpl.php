@@ -308,6 +308,15 @@
 						<span class="help-inline"></span>
 					</div>
 				</div>
+				<div id="invoicedInputContainer" class="control-group">
+					<label class="control-label" for="invoiced">Invoiced</label>
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" id="invoiced" name="invoiced" <# if (item.get('invoiced') == 1 || item.get('invoiced') == '1') { #>checked<# } #>>
+							<span class="help-inline"></span>
+						</label>
+					</div>
+				</div>
 			</fieldset>
 		</form>
 
