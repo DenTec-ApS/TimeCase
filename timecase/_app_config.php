@@ -18,7 +18,7 @@
 /**
  * Number of records per page (pagination)
  */
-GlobalConfig::$DEFAULT_PAGE_SIZE = 10;
+GlobalConfig::$DEFAULT_PAGE_SIZE = 25;
 
 /**
  * LONG POLLING (auto-refresh table data with AJAX)
