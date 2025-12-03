@@ -444,6 +444,7 @@ model.TimeEntryModel = Backbone.Model.extend({
 	idAttribute: 'id',
 	id: '',
 	projectId: '',
+	customerId: '',
 	userId: '',
 	categoryId: '',
 	categoryName: '',
@@ -453,13 +454,14 @@ model.TimeEntryModel = Backbone.Model.extend({
 	defaults: {
 		'id': null,
 		'projectId': '',
+		'customerId': '',
 		'userId': '',
 		'categoryId': '',
 		'start': '',
 		'end': '',
 		'description': ''
 	}
-	
+
 });
 
 

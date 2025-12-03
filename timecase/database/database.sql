@@ -96,7 +96,8 @@ INSERT INTO `statuses` (`id`, `description`) VALUES
 DROP TABLE IF EXISTS `time_entries`;
 CREATE TABLE IF NOT EXISTS `time_entries` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `project_id` int(10) NOT NULL,
+  `project_id` int(10) NULL,
+  `customer_id` int(10) NOT NULL,
   `user_id` int(10) NOT NULL,
   `category_id` int(10) NOT NULL,
   `start` timestamp NULL DEFAULT NULL,
@@ -105,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `time_entries` (
   `location` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`),
+  KEY `customer_id` (`customer_id`),
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`)
 ) DEFAULT CHARSET=utf8;

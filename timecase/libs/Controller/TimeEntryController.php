@@ -176,7 +176,9 @@ class TimeEntryController extends AppBaseController
 
 			$timeentry = new TimeEntry($this->Phreezer);
 
-			$timeentry->ProjectId = $this->SafeGetVal($json, 'projectId');
+			$projectId = $this->SafeGetVal($json, 'projectId');
+			$timeentry->ProjectId = ($projectId === '' || $projectId === null) ? null : $projectId;
+			$timeentry->CustomerId = $this->SafeGetVal($json, 'customerId');
 			$timeentry->CategoryId = $this->SafeGetVal($json, 'categoryId');
 			$timeentry->Description = $this->SafeGetVal($json, 'description');
 			$timeentry->Location = $_SERVER['REMOTE_ADDR'];
@@ -243,7 +245,9 @@ class TimeEntryController extends AppBaseController
 			$pk = $this->GetRouter()->GetUrlParam('id');
 			$timeentry = $this->Phreezer->Get('TimeEntry',$pk);
 
-			$timeentry->ProjectId = $this->SafeGetVal($json, 'projectId', $timeentry->ProjectId);
+			$projectId = $this->SafeGetVal($json, 'projectId', $timeentry->ProjectId);
+			$timeentry->ProjectId = ($projectId === '' || $projectId === null) ? null : $projectId;
+			$timeentry->CustomerId = $this->SafeGetVal($json, 'customerId', $timeentry->CustomerId);
 			$timeentry->CategoryId = $this->SafeGetVal($json, 'categoryId', $timeentry->CategoryId);
 			$timeentry->Description = $this->SafeGetVal($json, 'description', $timeentry->Description);
 			$timeentry->Location = $_SERVER['REMOTE_ADDR'];

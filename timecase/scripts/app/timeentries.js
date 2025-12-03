@@ -211,6 +211,17 @@ var page = {
 			stopTimer();
 		});
 		
+		// toggle project fields visibility (using event delegation for modal content)
+		$(document).on('change', '#projectFieldsToggle', function() {
+			if ($(this).prop('checked')) {
+				$('#filterCustomerIdTEInputContainer').slideDown();
+				$('#projectIdInputContainer').slideDown();
+			} else {
+				$('#filterCustomerIdTEInputContainer').slideUp();
+				$('#projectIdInputContainer').slideUp();
+			}
+		});
+
 		// make the defaults button clickable
 		$("#setDefaultsButton").click(function(e) {
 			
@@ -839,6 +850,40 @@ var page = {
 			}
 		});
 
+		// populate the dropdown options for customerId
+		var customerIdValues = new model.CustomerCollection();
+		customerIdValues.fetch({
+			success: function(c){
+				var dd = $('#customerId');
+				var isSelected = false;
+				c.forEach(function(item,index)
+				{
+					var selected = page.timeEntry.get('customerId') == item.get('id');
+					if (selected) isSelected = true;
+					dd.append(app.getOptionHtml(
+						item.get('id'),
+						item.get('name'),
+						selected
+					));
+				});
+				// If no customer is selected, select the first one
+				if (!isSelected && c.length > 0) {
+					dd.val(c.at(0).get('id'));
+					page.timeEntry.set('customerId', c.at(0).get('id'));
+				}
+
+				if (!app.browserSucks())
+				{
+					dd.combobox();
+					$('div.combobox-container + span.help-inline').hide();
+				}
+
+			},
+			error: function(collection,response,scope){
+				app.appendAlert(app.getErrorMessage(response), 'alert-error',0,'modelAlert');
+			}
+		});
+
 		// populate the dropdown options for categoryId
 		// TODO: load only the selected value, then fetch all options when the drop-down is clicked
 		var categoryIdValues = new model.CategoryCollection();
@@ -854,7 +899,7 @@ var page = {
 						page.timeEntry.get('categoryId') == item.get('id')
 					));
 				});
-				
+
 				if (!app.browserSucks())
 				{
 					dd.combobox();
@@ -911,9 +956,16 @@ var page = {
 
 		app.showProgress('modelLoader');
 
+		// Check if project fields should be included
+		var projectId = '';
+		if ($('#projectFieldsToggle').prop('checked')) {
+			projectId = $('select#projectId').val();
+		}
+
 		page.timeEntry.save({
 
-			'projectId': $('select#projectId').val(),
+			'projectId': projectId,
+			'customerId': $('#customerId').val(),
 			'userId': $('select#userId').val(),
 			'categoryId': $('select#categoryId').val(),
 			'start': $('input#start').val()+' '+$('input#start-time').val(),

@@ -28,6 +28,7 @@ class TimeEntryMap implements IDaoMap
 			$fm = Array();
 			$fm["Id"] = new FieldMap("Id","time_entries","id",true,FM_TYPE_INT,10,null,true);
 			$fm["ProjectId"] = new FieldMap("ProjectId","time_entries","project_id",false,FM_TYPE_INT,10,null,false);
+			$fm["CustomerId"] = new FieldMap("CustomerId","time_entries","customer_id",false,FM_TYPE_INT,10,null,false);
 			$fm["UserId"] = new FieldMap("UserId","time_entries","user_id",false,FM_TYPE_INT,10,null,false);
 			$fm["CategoryId"] = new FieldMap("CategoryId","time_entries","category_id",false,FM_TYPE_INT,10,null,false);
 			$fm["Start"] = new FieldMap("Start","time_entries","start",false,FM_TYPE_TIMESTAMP,null,null,false);
@@ -52,6 +53,7 @@ class TimeEntryMap implements IDaoMap
 			$km = Array();
 			$km["FK_time_entries_categories"] = new KeyMap("FK_time_entries_categories", "CategoryId", "Categories", "Id", KM_TYPE_MANYTOONE, KM_LOAD_LAZY); // you change to KM_LOAD_EAGER here or (preferrably) make the change in _config.php
 			$km["FK_time_entries_projects"] = new KeyMap("FK_time_entries_projects", "ProjectId", "Projects", "Id", KM_TYPE_MANYTOONE, KM_LOAD_LAZY); // you change to KM_LOAD_EAGER here or (preferrably) make the change in _config.php
+			$km["FK_time_entries_customers"] = new KeyMap("FK_time_entries_customers", "CustomerId", "Customers", "Id", KM_TYPE_MANYTOONE, KM_LOAD_LAZY); // you change to KM_LOAD_EAGER here or (preferrably) make the change in _config.php
 			$km["FK_time_entries_users"] = new KeyMap("FK_time_entries_users", "UserId", "Users", "Id", KM_TYPE_MANYTOONE, KM_LOAD_LAZY); // you change to KM_LOAD_EAGER here or (preferrably) make the change in _config.php
 		}
 		return $km;

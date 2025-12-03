@@ -165,6 +165,7 @@
 				<th id="header_Id">Id<# if (page.orderBy == 'Id') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				-->
 				<th id="header_ProjectId"><i class="icon-briefcase"></i>&nbsp; Project<# if (page.orderBy == 'ProjectId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+				<th id="header_CustomerId"><i class="icon-user"></i>&nbsp; Customer<# if (page.orderBy == 'CustomerId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_UserId"><i class="icon-user"></i>&nbsp; User Name<# if (page.orderBy == 'UserId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_CategoryId"><i class="icon-reorder"></i>&nbsp; Work Type<# if (page.orderBy == 'CategoryId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Description"><i class="icon-reorder"></i>&nbsp; Description<# if (page.orderBy == 'Description') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
@@ -183,6 +184,7 @@
 				<td><#= _.escape(item.get('id') || '') #></td>
 				-->
 				<td><#= _.escape(item.get('projectTitle') || '') #></td>
+				<td><#= _.escape(item.get('customerName') || '') #></td>
 				<td><#= _.escape(item.get('userName') || '') #></td>
 				<td><#= _.escape(item.get('categoryName') || '') #></td>
 				<td><#= _.escape(item.get('description') || '') #></td>
@@ -261,15 +263,30 @@
 						<span class="help-inline"></span>
 					</div>
 				</div>
-				<div id="filterCustomerIdTEInputContainer" class="control-group">
+				<div id="customerIdInputContainer" class="control-group">
+					<label class="control-label" for="customerId">Customer</label>
+					<div class="controls inline-inputs">
+						<select id="customerId" name="customerId"></select>
+						<span class="help-inline"></span>
+					</div>
+				</div>
+				<div id="projectFieldsToggleContainer" class="control-group">
+					<label class="control-label" for="projectFieldsToggle"></label>
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" id="projectFieldsToggle" name="projectFieldsToggle"> Show Project Fields
+						</label>
+					</div>
+				</div>
+				<div id="filterCustomerIdTEInputContainer" class="control-group" style="display:none;">
 					<label class="control-label" for="filterCustomerIdTE">Customer Filter</label>
 					<div class="controls inline-inputs">
 						<select id="filterCustomerIdTE" name="filterCustomerIdTE"></select>
 						<span class="help-inline"></span>
 					</div>
 				</div>
-				<div id="projectIdInputContainer" class="control-group">
-					<label class="control-label" for="projectId">Project</label>
+				<div id="projectIdInputContainer" class="control-group" style="display:none;">
+					<label class="control-label" for="projectId">Project (Optional)</label>
 					<div id="parentProjectIdTE" class="controls inline-inputs">
 						<select id="projectId" name="projectId"></select>
 						<span class="help-inline"></span>

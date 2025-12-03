@@ -21,6 +21,9 @@ class TimeEntryDAO extends Phreezable
 	public $ProjectId;
 
 	/** @var int */
+	public $CustomerId;
+
+	/** @var int */
 	public $UserId;
 
 	/** @var int */
