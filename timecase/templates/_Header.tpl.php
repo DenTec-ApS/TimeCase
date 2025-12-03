@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<base href="<?php $this->eprint($this->ROOT_URL); ?>" />
+	<!--<base href="<?php $this->eprint($this->ROOT_URL); ?>" />-->
 	<title><?php $this->eprint($this->title); ?></title>
 	<meta name="robots" content="noindex,nofollow">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -149,3 +149,4 @@
 		<button id="okButton" data-dismiss="modal" class="btn btn-primary">Close</button>
 	</div>
 </div>
+
