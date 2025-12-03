@@ -156,6 +156,7 @@
 			<tr>
 				<th>Customer</th>
 				<th id="header_ProjectId">Project<# if (page.orderBy == 'ProjectId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+				<th id="header_Att">Att</th>
 				<th id="header_UserId">User<# if (page.orderBy == 'UserId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_CategoryId">Work Type<# if (page.orderBy == 'CategoryId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Description">Description<# if (page.orderBy == 'Description') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>			
@@ -170,6 +171,7 @@
 			<tr id="<#= _.escape(item.get('id')) #>">
 				<td><#= _.escape(item.get('customerName') || '') #></td>
 				<td><#= _.escape(item.get('projectTitle') || '') #></td>
+				<td><#= _.escape(item.get('att') || '') #></td>
 				<td><#= _.escape(item.get('userName') || '') #></td>
 				<td><#= _.escape(item.get('categoryName') || '') #></td>
 				<td><#= _.escape(item.get('description') || '') #></td>

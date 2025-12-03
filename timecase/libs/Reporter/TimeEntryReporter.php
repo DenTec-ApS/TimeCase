@@ -38,6 +38,7 @@ class TimeEntryReporter extends Reporter
 	public $End;
 	public $Description;
 	public $Invoiced;
+	public $Att;
 
 	/*
 	* GetCustomQuery returns a fully formed SQL statement.  The result columns
@@ -78,6 +79,7 @@ class TimeEntryReporter extends Reporter
 
 			,`time_entries`.`description` as Description
 			,`time_entries`.`invoiced` as Invoiced
+			,`time_entries`.`att` as Att
 		from `time_entries`
 		inner join categories on categories.id = time_entries.category_id
 		inner join users on users.id = time_entries.user_id

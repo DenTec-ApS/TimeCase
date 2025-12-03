@@ -986,7 +986,8 @@ var page = {
 			'start': $('input#start').val()+' '+$('input#start-time').val(),
 			'end': $('input#end').val()+' '+$('input#end-time').val(),
 			'description': $('textarea#description').val(),
-			'invoiced': $('#invoiced').prop('checked') ? 1 : 0
+			'invoiced': $('#invoiced').prop('checked') ? 1 : 0,
+			'att': $('input#att').val()
 		}, {
 			wait: true,
 			success: function(){
