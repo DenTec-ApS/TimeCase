@@ -14,7 +14,14 @@
 }
 
 .collectionContainer{
-	overflow: hidden;
+	overflow-x: auto;
+	overflow-y: visible;
+	width: 100%;
+}
+
+table.collection {
+	min-width: 800px;
+	width: 100%;
 }
 
 .brand {

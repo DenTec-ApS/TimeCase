@@ -13,7 +13,7 @@
 
 	<!-- Le styles -->
 	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-	<link href="styles/style.css" rel="stylesheet" />
+	<link href="styles/style.css?v=2" rel="stylesheet" />
 	<link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
 	<link href="bootstrap/css/font-awesome.css" rel="stylesheet" />
 	<link href="bootstrap/css/bootstrap-datepicker.css" rel="stylesheet" />
