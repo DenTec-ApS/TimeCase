@@ -876,22 +876,16 @@ var page = {
 		customerIdValues.fetch({
 			success: function(c){
 				var dd = $('#customerId');
-				var isSelected = false;
+				dd.append('<option value=""></option>');
 				c.forEach(function(item,index)
 				{
 					var selected = page.timeEntry.get('customerId') == item.get('id');
-					if (selected) isSelected = true;
 					dd.append(app.getOptionHtml(
 						item.get('id'),
 						item.get('name'),
 						selected
 					));
 				});
-				// If no customer is selected, select the first one
-				if (!isSelected && c.length > 0) {
-					dd.val(c.at(0).get('id'));
-					page.timeEntry.set('customerId', c.at(0).get('id'));
-				}
 
 				if (!app.browserSucks())
 				{
