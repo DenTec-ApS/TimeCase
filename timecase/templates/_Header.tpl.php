@@ -30,6 +30,14 @@
 
 	<!-- Le fav and touch icons -->
 	<link rel="shortcut icon" href="images/favicon.ico" />
+
+	<!-- PWA Manifest -->
+	<link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#2c3e50">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="TimeCase">
 	
 	<script type="text/javascript">
 
@@ -54,7 +62,22 @@
 			.script("scripts/libs/jquery-1.8.2.min.js").wait()
 			.script("bootstrap/js/bootstrap.min.js");
 	</script>
-	
+
+	<!-- Service Worker Registration -->
+	<script type="text/javascript">
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function() {
+				navigator.serviceWorker.register('service-worker.js')
+					.then(function(registration) {
+						console.log('ServiceWorker registration successful: ', registration);
+					})
+					.catch(function(err) {
+						console.log('ServiceWorker registration failed: ', err);
+					});
+			});
+		}
+	</script>
+
 </head>
 
 <body>
