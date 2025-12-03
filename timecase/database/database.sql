@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS `time_entries` (
   `end` timestamp NULL DEFAULT NULL,
   `description` text NOT NULL,
   `location` varchar(50) DEFAULT NULL,
+  `invoiced` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`),
   KEY `customer_id` (`customer_id`),

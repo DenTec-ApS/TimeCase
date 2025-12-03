@@ -170,6 +170,7 @@
 				<th id="header_CategoryId"><i class="icon-reorder"></i>&nbsp; Work Type<# if (page.orderBy == 'CategoryId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Description"><i class="icon-reorder"></i>&nbsp; Description<# if (page.orderBy == 'Description') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Duration"><i class="icon-time"></i>&nbsp; Duration<# if (page.orderBy == 'Duration') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+			<th id="header_Invoiced"><i class="icon-check"></i>&nbsp; Invoiced<# if (page.orderBy == 'Invoiced') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
 				<th><i class="icon-user"></i>&nbsp; Customer Name</th>
 				<th id="header_Start"><i class="icon-reorder"></i>&nbsp; Start<# if (page.orderBy == 'Start') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
@@ -189,6 +190,7 @@
 				<td><#= _.escape(item.get('categoryName') || '') #></td>
 				<td><#= _.escape(item.get('description') || '') #></td>
 				<td class="rtext"><#= _.escape(item.get('durationFormatted') || '') #></td>
+				<td><input type="checkbox" class="invoiced-checkbox" data-id="<#= _.escape(item.get('id')) #>" <# if (item.get('invoiced') == 1 || item.get('invoiced') == '1') { #>checked<# } #>></td>
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
 				<td><#= _.escape(item.get('customerName') || '') #></td>
 				<td><#if (item.get('start')) { #><#= _date(app.parseDate(item.get('start'))).format('MMM D, YYYY H:mm') #><# } else { #>NULL<# } #></td>

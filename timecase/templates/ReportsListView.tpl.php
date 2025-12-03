@@ -119,8 +119,18 @@
 			<span class="help-inline" style="display: none;"></span>
 		</div>
 	</div>
-	
 
+	<div class="control-group pull-left combo" id="filterInvoicedInputContainer">
+		<label for="invoicedFilter" class="control-label">Invoice Status</label>
+		<div class="controls">
+			<select name="invoicedFilter" id="invoicedFilter">
+				<option value="">All</option>
+				<option value="0">Not Invoiced</option>
+				<option value="1">Invoiced</option>
+			</select>
+			<span class="help-inline" style="display: none;"></span>
+		</div>
+	</div>
 
 </div>
 <div class="clearfix"></div>
@@ -152,6 +162,7 @@
 				<th id="header_Start">Start<# if (page.orderBy == 'Start') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_End">End<# if (page.orderBy == 'End') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Duration">Duration</th>
+				<th id="header_Invoiced">Invoiced</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -165,6 +176,7 @@
 				<td><#if (item.get('start')) { #><#= _date(app.parseDate(item.get('start'))).format('MMM D, H:mm') #><# } else { #>NULL<# } #></td>
 				<td><#if (item.get('end')) { #><#= _date(app.parseDate(item.get('end'))).format('MMM D, H:mm') #><# } else { #>NULL<# } #></td>
 				<td class="rtext"><#= _.escape(item.get('durationFormatted') || '') #></td>
+				<td><input type="checkbox" class="invoiced-checkbox" data-id="<#= _.escape(item.get('id')) #>" <# if (item.get('invoiced') == 1 || item.get('invoiced') == '1') { #>checked<# } #>></td>
 			</tr>
 		<# }); #>
 		</tbody>

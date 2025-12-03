@@ -123,6 +123,9 @@ class ReportsController extends AppBaseController
 			$filterByCategory = RequestUtil::Get('filterByCategory');
 			if ($filterByCategory) $criteria->AddFilter(new CriteriaFilter('CategoryId', $filterByCategory));
 
+			$filterByInvoiced = RequestUtil::Get('filterByInvoiced');
+			if ($filterByInvoiced !== '') $criteria->AddFilter(new CriteriaFilter('Invoiced', $filterByInvoiced));
+
 			foreach (array_keys($_REQUEST) as $prop)
 			{
 				if ($prop === 'start') continue;

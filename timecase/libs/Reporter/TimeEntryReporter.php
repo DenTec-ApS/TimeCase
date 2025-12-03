@@ -37,6 +37,7 @@ class TimeEntryReporter extends Reporter
 	public $Start;
 	public $End;
 	public $Description;
+	public $Invoiced;
 
 	/*
 	* GetCustomQuery returns a fully formed SQL statement.  The result columns
@@ -76,6 +77,7 @@ class TimeEntryReporter extends Reporter
 			, TIMESTAMPDIFF(MINUTE, time_entries.start, time_entries.end) as Duration
 
 			,`time_entries`.`description` as Description
+			,`time_entries`.`invoiced` as Invoiced
 		from `time_entries`
 		inner join categories on categories.id = time_entries.category_id
 		inner join users on users.id = time_entries.user_id

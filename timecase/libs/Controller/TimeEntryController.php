@@ -181,8 +181,9 @@ class TimeEntryController extends AppBaseController
 			$timeentry->CustomerId = $this->SafeGetVal($json, 'customerId');
 			$timeentry->CategoryId = $this->SafeGetVal($json, 'categoryId');
 			$timeentry->Description = $this->SafeGetVal($json, 'description');
+			$timeentry->Invoiced = $this->SafeGetVal($json, 'invoiced', 0);
 			$timeentry->Location = $_SERVER['REMOTE_ADDR'];
-			
+
 			if ($this->IsAuthorized(self::$ROLE_ADMIN | self::$ROLE_MANAGER)){
 				$timeentry->UserId = $this->SafeGetVal($json, 'userId', $timeentry->UserId);
 			}else{
@@ -250,8 +251,9 @@ class TimeEntryController extends AppBaseController
 			$timeentry->CustomerId = $this->SafeGetVal($json, 'customerId', $timeentry->CustomerId);
 			$timeentry->CategoryId = $this->SafeGetVal($json, 'categoryId', $timeentry->CategoryId);
 			$timeentry->Description = $this->SafeGetVal($json, 'description', $timeentry->Description);
+			$timeentry->Invoiced = $this->SafeGetVal($json, 'invoiced', $timeentry->Invoiced);
 			$timeentry->Location = $_SERVER['REMOTE_ADDR'];
-			
+
 			if ($this->IsAuthorized(self::$ROLE_ADMIN | self::$ROLE_MANAGER)){
 				$timeentry->UserId = $this->SafeGetVal($json, 'userId', $timeentry->UserId);
 			}

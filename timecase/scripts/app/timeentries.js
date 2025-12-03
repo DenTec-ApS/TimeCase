@@ -222,6 +222,27 @@ var page = {
 			}
 		});
 
+		// handle invoiced checkbox changes in the table
+		$(document).on('change', '.invoiced-checkbox', function() {
+			var $checkbox = $(this);
+			var timeEntryId = parseInt($checkbox.data('id'));
+			var isInvoiced = $checkbox.prop('checked') ? 1 : 0;
+
+			// Find the time entry in the collection and update it
+			var timeEntry = page.timeEntries.find(function(item) { return parseInt(item.get('id')) === timeEntryId; });
+			if (timeEntry) {
+				timeEntry.save({'invoiced': isInvoiced}, {
+					patch: true,
+					wait: true,
+					error: function(model, response) {
+						// Revert checkbox on error
+						$checkbox.prop('checked', !isInvoiced);
+						app.appendAlert(app.getErrorMessage(response), 'alert-error', 3000, 'collectionAlert');
+					}
+				});
+			}
+		});
+
 		// make the defaults button clickable
 		$("#setDefaultsButton").click(function(e) {
 			
@@ -970,7 +991,8 @@ var page = {
 			'categoryId': $('select#categoryId').val(),
 			'start': $('input#start').val()+' '+$('input#start-time').val(),
 			'end': $('input#end').val()+' '+$('input#end-time').val(),
-			'description': $('textarea#description').val()
+			'description': $('textarea#description').val(),
+			'invoiced': page.timeEntry.get('invoiced')
 		}, {
 			wait: true,
 			success: function(){

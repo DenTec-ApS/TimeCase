@@ -35,6 +35,7 @@ class TimeEntryMap implements IDaoMap
 			$fm["End"] = new FieldMap("End","time_entries","end",false,FM_TYPE_TIMESTAMP,null,null,false);
 			$fm["Description"] = new FieldMap("Description","time_entries","description",false,FM_TYPE_TEXT,null,null,false);
 			$fm["Location"] = new FieldMap("Location","time_entries","location",false,FM_TYPE_VARCHAR,50,null,false);
+			$fm["Invoiced"] = new FieldMap("Invoiced","time_entries","invoiced",false,FM_TYPE_INT,1,null,false);
 		}
 		return $fm;
 	}

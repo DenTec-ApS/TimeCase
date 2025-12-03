@@ -451,6 +451,7 @@ model.TimeEntryModel = Backbone.Model.extend({
 	start: '',
 	end: '',
 	description: '',
+	invoiced: '',
 	defaults: {
 		'id': null,
 		'projectId': '',
@@ -459,7 +460,8 @@ model.TimeEntryModel = Backbone.Model.extend({
 		'categoryId': '',
 		'start': '',
 		'end': '',
-		'description': ''
+		'description': '',
+		'invoiced': ''
 	}
 
 });
@@ -526,7 +528,7 @@ model.TimeEntryCollection = Backbone.Collection.extend({
  * Reports Model
  */
 model.ReportsModel = Backbone.Model.extend({
-	urlRoot: 'api/reports',
+	urlRoot: 'api/timeentry',
 	idAttribute: 'id',
 	id: '',
 	projectId: '',
@@ -536,6 +538,7 @@ model.ReportsModel = Backbone.Model.extend({
 	start: '',
 	end: '',
 	description: '',
+	invoiced: '',
 	defaults: {
 		'id': null,
 		'projectId': '',
@@ -543,9 +546,10 @@ model.ReportsModel = Backbone.Model.extend({
 		'categoryId': '',
 		'start': '',
 		'end': '',
-		'description': ''
+		'description': '',
+		'invoiced': ''
 	}
-	
+
 });
 
 

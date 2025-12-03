@@ -12,16 +12,17 @@ var page = {
 	isInitialized: false,
 	isInitializing: false,
 
-	fetchParams: { 
-		orderBy: '', 
-		orderDesc: '', 
-		page: 1, 
-		filterByTimeStart: '', 
-		filterByTimeEnd: '', 
-		filterByCustomer: '', 
-		filterByProject: '',  
-		filterByUser: '', 
-		filterByCategory: ''},
+	fetchParams: {
+		orderBy: '',
+		orderDesc: '',
+		page: 1,
+		filterByTimeStart: '',
+		filterByTimeEnd: '',
+		filterByCustomer: '',
+		filterByProject: '',
+		filterByUser: '',
+		filterByCategory: '',
+		filterByInvoiced: ''},
 		
 	fetchInProgress: false,
 	dialogIsOpen: false,
@@ -129,6 +130,7 @@ var page = {
 			$('#projectId').combobox();
 			$('#userId').combobox();
 			$('#categoryId').combobox();
+			$('#invoicedFilter').combobox();
 			$('div.combobox-container + span.help-inline').hide(); // TODO: hack because combobox is making the inline help div have a height
 		}
 
@@ -165,10 +167,31 @@ var page = {
 				page.fetchParams.page = this.id.substr(5);
 				page.fetchTimeEntries(page.fetchParams);
 			});
-			
+
+			// handle invoiced checkbox changes in the table
+			$('.invoiced-checkbox').on('change', function() {
+				var $checkbox = $(this);
+				var timeEntryId = parseInt($checkbox.data('id'));
+				var isInvoiced = $checkbox.prop('checked') ? 1 : 0;
+
+				// Find the time entry in the collection and update it
+				var timeEntry = page.timeEntries.find(function(item) { return parseInt(item.get('id')) === timeEntryId; });
+				if (timeEntry) {
+					timeEntry.save({'invoiced': isInvoiced}, {
+						patch: true,
+						wait: true,
+						error: function(model, response) {
+							// Revert checkbox on error
+							$checkbox.prop('checked', !isInvoiced);
+							app.appendAlert(app.getErrorMessage(response), 'alert-error', 3000, 'collectionAlert');
+						}
+					});
+				}
+			});
+
 			page.isInitialized = true;
 			page.isInitializing = false;
-			
+
 		});
 
 		// backbone docs recommend bootstrapping data on initial page load, but we live by our own rules!
@@ -189,18 +212,20 @@ var page = {
 		var projectId = $('#projectId').val();
 		var userId = $('#userId').val();
 		var categoryId = $('#categoryId').val();
-		
+		var invoicedFilter = $('#invoicedFilter').val();
+
 		page.fetchParams.filterByTimeStart = timeStart;
 		page.fetchParams.filterByTimeEnd = timeEnd;
 		page.fetchParams.filterByCustomer = customerId;
 		page.fetchParams.filterByProject = projectId;
 		page.fetchParams.filterByUser = userId;
 		page.fetchParams.filterByCategory = categoryId;
-		
+		page.fetchParams.filterByInvoiced = invoicedFilter;
+
 		if (getFiltersOnly){
 			return page.fetchParams;
 		}
-		
+
 		page.fetchParams.page = 1;
 		page.fetchTimeEntries(page.fetchParams);
 	},

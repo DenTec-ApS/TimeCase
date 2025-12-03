@@ -37,7 +37,10 @@ class TimeEntryDAO extends Phreezable
 
 	/** @var string */
 	public $Description;
-	
+
+	/** @var bool */
+	public $Invoiced;
+
 	/** @var string */
 	public $Location;
 	
