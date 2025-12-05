@@ -74,6 +74,16 @@
 		</div>
 	</div>
 </div>
+
+<div class="pull-right" id="dateRangePresets" style="margin-top: 8px;">
+	<button type="button" class="btn btn-sm date-preset" data-preset="today">Today</button>
+	<button type="button" class="btn btn-sm date-preset" data-preset="yesterday">Yesterday</button>
+	<button type="button" class="btn btn-sm date-preset" data-preset="thisweek">This Week</button>
+	<button type="button" class="btn btn-sm date-preset" data-preset="lastweek">Last Week</button>
+	<button type="button" class="btn btn-sm date-preset" data-preset="thismonth">This Month</button>
+	<button type="button" class="btn btn-sm date-preset" data-preset="lastmonth">Last Month</button>
+</div>
+
 <div class="clearfix"></div>
 
 <div class="pull-left">
@@ -124,7 +134,7 @@
 		<label for="invoicedFilter" class="control-label">Invoice Status</label>
 		<div class="controls">
 			<select name="invoicedFilter" id="invoicedFilter">
-				<option value="">All</option>
+				<option value=""></option>
 				<option value="0">Not Invoiced</option>
 				<option value="1">Invoiced</option>
 			</select>

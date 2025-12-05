@@ -121,8 +121,140 @@ var page = {
 		.on('changeDate', function(ev){
 			$('.date-picker').datepicker('hide');
 		});
-		
-		
+
+		// date range preset buttons - helper functions
+	function formatDate(date) {
+		var d = new Date(date);
+		var day = ('0' + d.getDate()).slice(-2);
+		var month = ('0' + (d.getMonth() + 1)).slice(-2);
+		var year = (d.getFullYear() + '').slice(-2);
+		return day + '-' + month + '-' + year;
+	}
+
+	function getMonday(d) {
+		d = new Date(d);
+		var day = d.getDay(),
+			diff = d.getDate() - day + (day === 0 ? -6 : 1);
+		return new Date(d.setDate(diff));
+	}
+
+	function updatePresetHighlight() {
+		var startVal = $('#start').val();
+		var endVal = $('#end').val();
+		var today = new Date();
+
+		$('.date-preset').each(function() {
+			var preset = $(this).data('preset');
+			var start, end;
+
+			switch(preset) {
+				case 'today':
+					start = new Date(today);
+					end = new Date(today);
+					break;
+				case 'yesterday':
+					start = new Date(today);
+					start.setDate(start.getDate() - 1);
+					end = new Date(start);
+					break;
+				case 'thisweek':
+					start = getMonday(today);
+					end = new Date(today);
+					break;
+				case 'lastweek':
+					var lastMonday = getMonday(today);
+					lastMonday.setDate(lastMonday.getDate() - 7);
+					start = lastMonday;
+					end = new Date(lastMonday);
+					end.setDate(end.getDate() + 6);
+					break;
+				case 'thismonth':
+					start = new Date(today.getFullYear(), today.getMonth(), 1);
+					end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+					break;
+				case 'lastmonth':
+					start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+					end = new Date(today.getFullYear(), today.getMonth(), 0);
+					break;
+			}
+
+			if (startVal === formatDate(start) && endVal === formatDate(end)) {
+				$(this).addClass('active').css('background-color', '#2eac99').css('color', '#ffffff');
+			} else {
+				$(this).removeClass('active').css('background-color', '').css('color', '');
+			}
+		});
+	}
+
+	// date range preset buttons
+		$('.date-preset').on('click', function(e){
+			e.preventDefault();
+			var preset = $(this).data('preset');
+			var today = new Date();
+			var start, end;
+
+			function formatDate(date) {
+				var d = new Date(date);
+				var day = ('0' + d.getDate()).slice(-2);
+				var month = ('0' + (d.getMonth() + 1)).slice(-2);
+				var year = (d.getFullYear() + '').slice(-2);
+				return day + '-' + month + '-' + year;
+			}
+
+			function getMonday(d) {
+				d = new Date(d);
+				var day = d.getDay(),
+					diff = d.getDate() - day + (day === 0 ? -6 : 1);
+				return new Date(d.setDate(diff));
+			}
+
+			switch(preset) {
+				case 'today':
+					start = new Date(today);
+					end = new Date(today);
+					break;
+				case 'yesterday':
+					start = new Date(today);
+					start.setDate(start.getDate() - 1);
+					end = new Date(start);
+					break;
+				case 'thisweek':
+					start = getMonday(today);
+					end = new Date(today);
+					break;
+				case 'lastweek':
+					var lastMonday = getMonday(today);
+					lastMonday.setDate(lastMonday.getDate() - 7);
+					start = lastMonday;
+					end = new Date(lastMonday);
+					end.setDate(end.getDate() + 6);
+					break;
+				case 'thismonth':
+					start = new Date(today.getFullYear(), today.getMonth(), 1);
+					end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+					break;
+				case 'lastmonth':
+					start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+					end = new Date(today.getFullYear(), today.getMonth(), 0);
+					break;
+			}
+
+			if (start && end) {
+				$('#start').val(formatDate(start)).datepicker('update');
+				$('#end').val(formatDate(end)).datepicker('update');
+				updatePresetHighlight();
+				page.refreshData();
+			}
+		});
+
+		// Update highlight when dates change
+		$('#start, #end').on('changeDate change', function() {
+			updatePresetHighlight();
+		});
+
+		// Initial highlight check
+		updatePresetHighlight();
+
 		// call comboboxes
 		if (!app.browserSucks())
 		{
