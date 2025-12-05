@@ -97,7 +97,7 @@ class ProjectController extends AppBaseController
 		if ($output->orderBy){
 			$criteria->SetOrder($output->orderBy, $output->orderDesc);
 		}else{
-			$criteria->SetOrder('StatusId', false);
+			$criteria->SetOrder('Created', false);
 		}
 
 			$page = RequestUtil::Get('page');

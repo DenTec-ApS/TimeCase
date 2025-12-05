@@ -93,7 +93,7 @@ class TimeEntryController extends AppBaseController
  			if ($output->orderBy){
  				$criteria->SetOrder($output->orderBy, $output->orderDesc);
  			}else{
- 				$criteria->SetOrder('Id', true);
+ 				$criteria->SetOrder('Start', true);
  			}
 
 			$page = RequestUtil::Get('page');
