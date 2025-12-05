@@ -117,7 +117,7 @@ var page = {
 
 		// init date-pickers
 		$('.date-picker')
-		.datepicker({ format: 'yyyy-mm-dd' })
+		.datepicker({ format: 'dd-mm-yy', weekStart: 1 })
 		.on('changeDate', function(ev){
 			$('.date-picker').datepicker('hide');
 		});
