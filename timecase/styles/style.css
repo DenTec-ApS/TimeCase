@@ -68,6 +68,14 @@ p.buttonContainer {
 	width: 100%;
 }
 
+table.collection tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+table.collection tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
 table.collection tr:hover {
     cursor: pointer;
     background-color: #fbfbfb
