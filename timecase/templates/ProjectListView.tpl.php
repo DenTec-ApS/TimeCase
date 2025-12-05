@@ -155,7 +155,7 @@
 				<div id="createdInputContainer" class="control-group">
 					<label class="control-label" for="created">Created</label>
 					<div class="controls inline-inputs">
-						<input type="text" class="date-picker input-xlarge" id="created" value="<#= _date(app.parseDate(item.get('created'))).format('YYYY-MM-DD') #>">
+						<input type="text" class="date-picker input-xlarge" id="created" value="<#= _date(app.parseDate(item.get('created'))).format('DD-MM-YY') #>">
 						<input type="text" class="time-picker input-xlarge" id="created-time" value="<#= _date(app.parseDate(item.get('created'))).format('H:mm') #>">
 						<span class="help-inline"></span>
 					</div>
@@ -163,7 +163,7 @@
 				<div id="deadlineInputContainer" class="control-group">
 					<label class="control-label" for="deadline">Deadline</label>
 					<div class="controls inline-inputs">
-						<input type="text" class="date-picker input-xlarge" id="deadline" value="<#= _date(app.parseDate(item.get('deadline'))).format('YYYY-MM-DD') #>">
+						<input type="text" class="date-picker input-xlarge" id="deadline" value="<#= _date(app.parseDate(item.get('deadline'))).format('DD-MM-YY') #>">
 						<input type="text" class="time-picker input-xlarge" id="deadline-time" value="<#= _date(app.parseDate(item.get('deadline'))).format('H:mm') #>">
 						<span class="help-inline"></span>
 					</div>
@@ -171,7 +171,7 @@
 				<div id="closedInputContainer" class="control-group" style="display:none"> <!-- additional date disabled -->
 					<label class="control-label" for="closed">Closed / Payment</label>
 					<div class="controls inline-inputs">
-						<input type="text" class="date-picker input-xlarge" id="closed" value="<#= _date(app.parseDate(item.get('closed'))).format('YYYY-MM-DD') #>">
+						<input type="text" class="date-picker input-xlarge" id="closed" value="<#= _date(app.parseDate(item.get('closed'))).format('DD-MM-YY') #>">
 						<input type="text" class="time-picker input-xlarge" id="closed-time" value="<#= _date(app.parseDate(item.get('closed'))).format('H:mm') #>">
 						<span class="help-inline"></span>
 					</div>

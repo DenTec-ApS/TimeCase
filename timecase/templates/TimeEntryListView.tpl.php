@@ -217,7 +217,7 @@
 					<label class="control-label" for="start">Start</label>
 					<div class="controls inline-inputs">
 					 <div class="timespan">
-						<input type="text" class="date-picker input-xlarge" id="start" value="<#= _date(app.parseDate(item.get('start'))).format('YY-MM-DD') #>"> 
+						<input type="text" class="date-picker input-xlarge" id="start" value="<#= _date(app.parseDate(item.get('start'))).format('DD-MM-YY') #>"> 
 						<input type="text" class="time-picker input-xlarge" id="start-time" value="<#= _date(app.parseDate(item.get('start'))).format('H:mm') #>">
 						<span class="quick-times">
 							<span class="start-btns">
@@ -241,7 +241,7 @@
 					<label class="control-label" for="end">End</label>
 					<div class="controls inline-inputs">
 					 <div class="timespan">
-						<input type="text" class="date-picker input-xlarge" id="end" value="<#= _date(app.parseDate(item.get('end'))).format('YY-MM-DD') #>">
+						<input type="text" class="date-picker input-xlarge" id="end" value="<#= _date(app.parseDate(item.get('end'))).format('DD-MM-YY') #>">
 						<input type="text" class="time-picker input-xlarge" id="end-time" value="<#= _date(app.parseDate(item.get('end'))).format('H:mm') #>">
 						<span class="quick-times">
 							&nbsp;<i class="icon-sort-down ctrl"></i>&nbsp;

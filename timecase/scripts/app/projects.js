@@ -222,7 +222,7 @@ var page = {
 		// initialize any special controls
 		try {
 			$('.date-picker')
-				.datepicker({ format: 'yyyy-mm-dd' })
+				.datepicker({ format: 'dd-mm-yy', weekStart: 1 })
 				.on('changeDate', function(ev){
 					$('.date-picker').datepicker('hide');
 				});

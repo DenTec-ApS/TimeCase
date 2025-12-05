@@ -662,7 +662,7 @@ var page = {
 		try {
 			
 			$('.date-picker')
-				.datepicker({ format: 'yy-mm-dd' })
+				.datepicker({ format: 'dd-mm-yy', weekStart: 1 })
 				.on('changeDate', function(ev){
 					$('.date-picker').datepicker('hide');
 					
