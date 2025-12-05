@@ -6,20 +6,20 @@
 ?>
 
 <script type="text/javascript">
-	$LAB.script("bootstrap/js/bootstrap-datepicker.js")
-	.script("bootstrap/js/bootstrap-combobox.js")
-	.script("scripts/libs/underscore-min.js").wait()
-	.script("scripts/libs/underscore.date.min.js")
-	.script("scripts/libs/backbone.js")
-	.script("scripts/app.js")
-	.script("scripts/model.js").wait()
-	.script("scripts/view.js").wait()
-	.script("scripts/timecase.js").wait()
-	.script("scripts/app/customers.js").wait(function(){
+	$LAB.script("bootstrap/js/bootstrap-datepicker.js?v=1")
+	.script("bootstrap/js/bootstrap-combobox.js?v=1")
+	.script("scripts/libs/underscore-min.js?v=1").wait()
+	.script("scripts/libs/underscore.date.min.js?v=1")
+	.script("scripts/libs/backbone.js?v=1")
+	.script("scripts/app.js?v=2")
+	.script("scripts/model.js?v=1").wait()
+	.script("scripts/view.js?v=1").wait()
+	.script("scripts/timecase.js?v=1").wait()
+	.script("scripts/app/customers.js?v=1").wait(function(){
 		$(document).ready(function(){
 			page.init();
 		});
-		
+
 		// hack for IE9 which may respond inconsistently with document.ready
 		setTimeout(function(){
 			if (!page.isInitialized) page.init();
@@ -86,6 +86,7 @@
 				<th id="header_ContactPerson"><i class="icon-user"></i>&nbsp; Contact Person<# if (page.orderBy == 'ContactPerson') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Tel"><i class="icon-phone"></i>&nbsp; Phone<# if (page.orderBy == 'Tel') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_StatusId"><i class="icon-info-sign"></i>&nbsp; Status<# if (page.orderBy == 'StatusId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+				<th id="header_TotalHours"><i class="icon-time"></i>&nbsp; Total Hours<# if (page.orderBy == 'TotalHours') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 							
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
 				<th id="header_Location"><i class="icon-reorder"></i>&nbsp; Location<# if (page.orderBy == 'Location') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
@@ -108,6 +109,7 @@
 				<td><#= _.escape(item.get('contactPerson') || '') #></td>
 				<td><#= _.escape(item.get('tel') || '') #></td>
 				<td><#= _.escape(item.get('statusDescription') || '') #></td>
+				<td><#= app.formatHours(item.get('totalHours') || 0) #></td>
 				
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
 				<td><#= _.escape(item.get('location') || '') #></td>

@@ -91,14 +91,14 @@ class ProjectController extends AppBaseController
 			$output = new stdClass();
 
 			// if a sort order was specified then specify in the criteria
-			$output->orderBy = RequestUtil::Get('orderBy');
-			$output->orderDesc = RequestUtil::Get('orderDesc') != '';
+		$output->orderBy = RequestUtil::Get('orderBy');
+		$output->orderDesc = RequestUtil::Get('orderDesc') != '';
 
-			if ($output->orderBy){
-				$criteria->SetOrder($output->orderBy, $output->orderDesc);
-			}else{
-				$criteria->SetOrder('StatusId', false);
-			}
+		if ($output->orderBy){
+			$criteria->SetOrder($output->orderBy, $output->orderDesc);
+		}else{
+			$criteria->SetOrder('StatusId', false);
+		}
 
 			$page = RequestUtil::Get('page');
 
@@ -129,7 +129,7 @@ class ProjectController extends AppBaseController
 			if (!$this->IsAuthorized(self::$ROLE_ADMIN | self::$ROLE_MANAGER)){
 				foreach ($output->rows as &$row){
 					foreach ($row as $key => $field)
-						if ($key != 'id' && $key != 'title' && $key != 'customerId') unset($row->$key);
+						if ($key != 'id' && $key != 'title' && $key != 'customerId' && $key != 'totalHours') unset($row->$key);
 						
 				}
 			}

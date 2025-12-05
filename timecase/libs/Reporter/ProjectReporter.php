@@ -22,6 +22,7 @@ class ProjectReporter extends Reporter
 	// 'CustomFieldExample' is an example that is not part of the `projects` table
 	public $StatusDescription;
 	public $CustomerName;
+	public $TotalHours;
 
 	public $Id;
 	public $Title;
@@ -54,13 +55,18 @@ class ProjectReporter extends Reporter
 			,`projects`.`progress` as Progress
 			,`projects`.`status_id` as StatusId
 			,`projects`.`description` as Description
+			,COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as TotalHours
 		from `projects`
 		inner join statuses on statuses.id = projects.status_id
-		inner join customers on customers.id = projects.customer_id";
+		inner join customers on customers.id = projects.customer_id
+		left join time_entries te on te.project_id = projects.id";
 
 		// the criteria can be used or you can write your own custom logic.
 		// be sure to escape any user input with $criteria->Escape()
 		$sql .= $criteria->GetWhere();
+
+		// Add GROUP BY after WHERE clause
+		$sql .= " group by projects.id";
 		$sql .= $criteria->GetOrder();
 
 		return $sql;

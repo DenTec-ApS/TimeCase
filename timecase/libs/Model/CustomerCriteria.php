@@ -15,21 +15,32 @@ require_once("DAO/CustomerCriteriaDAO.php");
  */
 class CustomerCriteria extends CustomerCriteriaDAO
 {
-	
 	/**
-	 * For custom query logic, you may override OnProcess and set the $this->_where to whatever
-	 * sql code is necessary.  If you choose to manually set _where then Phreeze will not touch
-	 * your where clause at all and so any of the standard property names will be ignored
+	 * Override SetOrder to allow sorting by computed fields like TotalHours
 	 */
-	/*
-	function OnPrepare()
+	public function SetOrder($property, $desc = false)
 	{
-		if ($this->MyCustomField == "special value")
-		{
-			// _where must begin with "where"
-			$this->_where = "where db_field ....";
+		if (!$property) {
+			return;
 		}
+
+		// Special handling for TotalHours computed field
+		if (strtolower($property) == 'totalhours') {
+			$this->_where_delim = $this->_order ? "," : "";
+			$this->_order .= $this->_where_delim . 'SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0' . ($desc ? " desc" : "");
+			return;
+		}
+
+		// For all other properties, use the parent implementation
+		parent::SetOrder($property, $desc);
 	}
-	*/
+
+	/**
+	 * Override OnPrepare to handle any additional custom logic if needed
+	 */
+	public function OnPrepare()
+	{
+		parent::OnPrepare();
+	}
 
 }

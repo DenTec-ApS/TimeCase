@@ -177,6 +177,25 @@ var app = {
 		return msg ? msg : 'Unknown server error';
 	},
 
+	/**
+	 * Format decimal hours to hh:mm format
+	 * @param decimal hours value
+	 * @returns string in hh:mm format
+	 */
+	formatHours: function(decimalHours) {
+		if (!decimalHours || decimalHours === 0) return '00:00';
+
+		var totalMinutes = Math.round(decimalHours * 60);
+		var hours = Math.floor(totalMinutes / 60);
+		var minutes = totalMinutes % 60;
+
+		// Pad with zeros
+		hours = hours < 10 ? '0' + hours : hours;
+		minutes = minutes < 10 ? '0' + minutes : minutes;
+
+		return hours + ':' + minutes;
+	},
+
 	version: 1.1
 
 }

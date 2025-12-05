@@ -4,6 +4,7 @@
 /** import supporting libraries */
 require_once("AppBaseController.php");
 require_once("Model/Customer.php");
+require_once("Model/TimeEntry.php");
 require_once("util/password.php");
 
 /**
@@ -91,14 +92,14 @@ class CustomerController extends AppBaseController
 			$output = new stdClass();
 
 			// if a sort order was specified then specify in the criteria
- 			$output->orderBy = RequestUtil::Get('orderBy');
- 			$output->orderDesc = RequestUtil::Get('orderDesc') != '';
- 			
- 			if ($output->orderBy){
- 				$criteria->SetOrder($output->orderBy, $output->orderDesc);
- 			}else{
- 				$criteria->SetOrder('StatusId', false);
- 			}
+			$output->orderBy = RequestUtil::Get('orderBy');
+			$output->orderDesc = RequestUtil::Get('orderDesc') != '';
+
+			if ($output->orderBy){
+				$criteria->SetOrder($output->orderBy, $output->orderDesc);
+			}else{
+				$criteria->SetOrder('StatusId', false);
+			}
 
 			$page = RequestUtil::Get('page');
 
@@ -129,7 +130,7 @@ class CustomerController extends AppBaseController
 			if (!$this->IsAuthorized(self::$ROLE_ADMIN | self::$ROLE_MANAGER)){
 				foreach ($output->rows as &$row){
 					foreach ($row as $key => $field)
-						if ($key != 'id' && $key != 'name') unset($row->$key);
+						if ($key != 'id' && $key != 'name' && $key != 'totalHours') unset($row->$key);
 
 				}
 			}

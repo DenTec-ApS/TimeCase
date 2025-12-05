@@ -21,6 +21,7 @@ class CustomerReporter extends Reporter
 	// the properties in this class must match the columns returned by GetCustomQuery().
 	// 'CustomFieldExample' is an example that is not part of the `customers` table
 	public $StatusDescription;
+	public $TotalHours;
 
 	public $Id;
 	public $Name;
@@ -56,12 +57,17 @@ class CustomerReporter extends Reporter
 			,`customers`.`tel2` as Tel2
 			,`customers`.`status_id` as StatusId
 			,`customers`.`description` as Description
+			,COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as TotalHours
 		from `customers`
-		inner join statuses on statuses.id = customers.status_id";
+		inner join statuses on statuses.id = customers.status_id
+		left join time_entries te on te.customer_id = customers.id";
 
 		// the criteria can be used or you can write your own custom logic.
 		// be sure to escape any user input with $criteria->Escape()
 		$sql .= $criteria->GetWhere();
+
+		// Add GROUP BY after WHERE clause
+		$sql .= " group by customers.id";
 		$sql .= $criteria->GetOrder();
 
 		return $sql;
