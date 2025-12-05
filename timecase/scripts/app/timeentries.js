@@ -222,6 +222,16 @@ var page = {
 			}
 		});
 
+		// auto-enable project fields if project is populated
+		$(document).on('change', '#projectId', function() {
+			var projectValue = $(this).val();
+			if (projectValue && projectValue !== '') {
+				$('#projectFieldsToggle').prop('checked', true);
+				$('#filterCustomerIdTEInputContainer').slideDown();
+				$('#projectIdInputContainer').slideDown();
+			}
+		});
+
 		// handle invoiced checkbox changes in the table
 		$(document).on('change', '.invoiced-checkbox', function() {
 			var $checkbox = $(this);
@@ -830,11 +840,18 @@ var page = {
 						page.timeEntry.get('projectId') == item.get('id')
 					));
 				});
-				
+
 				if (!app.browserSucks())
 				{
 					dd.combobox();
 					$('div.combobox-container + span.help-inline').hide(); // TODO: hack because combobox is making the inline help div have a height
+				}
+
+				// auto-enable project fields if project is populated (only for existing records)
+				if (isExistingRecord && page.timeEntry.get('projectId') && page.timeEntry.get('projectId') !== '') {
+					$('#projectFieldsToggle').prop('checked', true);
+					$('#filterCustomerIdTEInputContainer').slideDown();
+					$('#projectIdInputContainer').slideDown();
 				}
 
 			},
