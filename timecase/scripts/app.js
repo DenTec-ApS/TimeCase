@@ -8,6 +8,20 @@ var app = {
 	errorLandmarkEnd: ' /ERROR -->',
 
 	/**
+	 * Format a date as dd-mm-yy
+	 * @param dateObj Date object or date string in yyyy-mm-dd format
+	 * @returns formatted date string dd-mm-yy
+	 */
+	formatDateDDMMYY: function(dateObj) {
+		var d = dateObj instanceof Date ? dateObj : this.parseDate(dateObj);
+		if (!d || isNaN(d.getTime())) return '';
+		var day = ('0' + d.getDate()).slice(-2);
+		var month = ('0' + (d.getMonth() + 1)).slice(-2);
+		var year = (d.getFullYear() + '').slice(-2);
+		return day + '-' + month + '-' + year;
+	},
+
+	/**
 	 * Display an alert message inside the element with the id containerId
 	 *
 	 * @param string message to display

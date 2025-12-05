@@ -327,19 +327,34 @@ var page = {
 		});
 
 		// backbone docs recommend bootstrapping data on initial page load, but we live by our own rules!
-		var initStart = $('input#start').val()+' '+$('input#start-time').val();
-		var initEnd = $('input#end').val()+' '+$('input#end-time').val();
+		var initStart = page.convertDateToIso($('input#start').val())+' '+$('input#start-time').val();
+		var initEnd = page.convertDateToIso($('input#end').val())+' '+$('input#end-time').val();
 		this.fetchTimeEntries({ page: 1,  filterByTimeStart: initStart, filterByTimeEnd: initEnd});
 
 	},
 	
+	convertDateToIso: function(dateStr) {
+		// Convert from dd-mm-yy format to yyyy-mm-dd
+		if (!dateStr || dateStr.length !== 8) return dateStr;
+		var parts = dateStr.split('-');
+		if (parts.length !== 3) return dateStr;
+		var day = parts[0];
+		var month = parts[1];
+		var year = parseInt(parts[2], 10);
+		// Convert 2-digit year to 4-digit year
+		var fullYear = (year < 50) ? '20' + parts[2] : '19' + parts[2];
+		return fullYear + '-' + month + '-' + day;
+	},
+
 	refreshData: function(getFiltersOnly)
 	{
-		var timeStart = $('input#start').val()+' '+$('input#start-time').val();
+		var startDate = page.convertDateToIso($('input#start').val());
+		var timeStart = startDate+' '+$('input#start-time').val();
 		if (!$('input#end').val()){
 			$('input#end').val($('input#start').val());
 		}
-		var timeEnd = $('input#end').val()+' '+$('input#end-time').val();
+		var endDate = page.convertDateToIso($('input#end').val());
+		var timeEnd = endDate+' '+$('input#end-time').val();
 		var customerId = $('#customerId').val();
 		var projectId = $('#projectId').val();
 		var userId = $('#userId').val();

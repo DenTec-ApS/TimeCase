@@ -5,6 +5,20 @@
 /**
  * application logic specific to the Project listing page
  */
+
+function convertDateToIso(dateStr) {
+	// Convert from dd-mm-yy format to yyyy-mm-dd
+	if (!dateStr || dateStr.length !== 8) return dateStr;
+	var parts = dateStr.split('-');
+	if (parts.length !== 3) return dateStr;
+	var day = parts[0];
+	var month = parts[1];
+	var year = parseInt(parts[2], 10);
+	// Convert 2-digit year to 4-digit year
+	var fullYear = (year < 50) ? '20' + parts[2] : '19' + parts[2];
+	return fullYear + '-' + month + '-' + day;
+}
+
 var page = {
 
 	projects: new model.ProjectCollection(),
@@ -337,9 +351,9 @@ var page = {
 
 			'title': $('input#title').val(),
 			'customerId': $('select#customerId').val(),
-			'created': $('input#created').val()+' '+$('input#created-time').val(),
-			'closed': $('input#closed').val()+' '+$('input#closed-time').val(),
-			'deadline': $('input#deadline').val()+' '+$('input#deadline-time').val(),
+			'created': convertDateToIso($('input#created').val())+' '+$('input#created-time').val(),
+			'closed': convertDateToIso($('input#closed').val())+' '+$('input#closed-time').val(),
+			'deadline': convertDateToIso($('input#deadline').val())+' '+$('input#deadline-time').val(),
 			'progress': $('input#progress').val(),
 			'statusId': $('select#statusId').val(),
 			'description': $('textarea#description').val()

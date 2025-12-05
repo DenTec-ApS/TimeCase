@@ -15,9 +15,9 @@ function getDateFromInput(dateSelector, timeSelector){
 	if (date_value === undefined || time_value === undefined) return new Date();
 	
 	var arr = date_value.split("-");
-	var year = arr[0];
+	var day = arr[0];
 	var month = arr[1];
-	var day = arr[2];
+	var year = arr[2];
 	
 	var arr = time_value.split(":");
 	var hours = arr[0];
@@ -25,7 +25,7 @@ function getDateFromInput(dateSelector, timeSelector){
 	
 	var d = new Date();
 	
-	if(!(!isNaN(parseFloat(year)) && isFinite(year))) year = d.getFullYear(); else year = year - 0 + 2000;
+	if(!(!isNaN(parseFloat(year)) && isFinite(year))) year = d.getFullYear(); else year = (year - 0) + 2000;
 	if(!(!isNaN(parseFloat(month)) && isFinite(month))) month = d.getMonth() + 1;
 	if(!(!isNaN(parseFloat(day)) && isFinite(day))) day = d.getDate();
 	if(!(!isNaN(parseFloat(hours)) && isFinite(hours))) hours = 0; //d.getHours();
@@ -107,10 +107,28 @@ function refreshInput(dateSelector, timeSelector, reset){
 		val.dd = (val.d < 10 ? '0' : '') + val.d;
 		val.mm = (val.m < 10 ? '0' : '') + val.m;
 		
-	$(dateSelector).val(val.yy + '-' + val.mm + '-' + val.dd);
+	$(dateSelector).val(val.dd + '-' + val.mm + '-' + val.yy);
 	$(timeSelector).val(val.hh + ':' + val.ii);
 	
 	return;
+}
+
+function formatDateForServer(dateObj) {
+	// Format a Date object to YYYY-MM-DD HH:MM:SS for server
+	var year = dateObj.getFullYear();
+	var month = dateObj.getMonth() + 1;
+	var day = dateObj.getDate();
+	var hours = dateObj.getHours();
+	var minutes = dateObj.getMinutes();
+	var seconds = dateObj.getSeconds();
+
+	month = (month < 10 ? '0' : '') + month;
+	day = (day < 10 ? '0' : '') + day;
+	hours = (hours < 10 ? '0' : '') + hours;
+	minutes = (minutes < 10 ? '0' : '') + minutes;
+	seconds = (seconds < 10 ? '0' : '') + seconds;
+
+	return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
 }
 
 function updateDurationField(){
@@ -728,7 +746,7 @@ var page = {
 					val.dd = (val.d < 10 ? '0' : '') + val.d;
 					val.mm = (val.m < 10 ? '0' : '') + val.m;
 					
-				$('input#' + input_object).val(val.yy + '-' + val.mm + '-' + val.dd);
+				$('input#' + input_object).val(val.dd + '-' + val.mm + '-' + val.yy);
 				$('input#' + input_object + '-time').val(val.hh + ':' + val.ii);
 				
 				updateDurationField();
@@ -994,14 +1012,17 @@ var page = {
 			projectId = $('select#projectId').val();
 		}
 
+		var start_date = getDateFromInput('input#start', 'input#start-time');
+		var end_date = getDateFromInput('input#end', 'input#end-time');
+
 		page.timeEntry.save({
 
 			'projectId': projectId,
 			'customerId': $('#customerId').val(),
 			'userId': $('select#userId').val(),
 			'categoryId': $('select#categoryId').val(),
-			'start': $('input#start').val()+' '+$('input#start-time').val(),
-			'end': $('input#end').val()+' '+$('input#end-time').val(),
+			'start': formatDateForServer(start_date),
+			'end': formatDateForServer(end_date),
 			'description': $('textarea#description').val(),
 			'invoiced': $('#invoiced').prop('checked') ? 1 : 0,
 			'att': $('input#att').val()
