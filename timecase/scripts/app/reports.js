@@ -410,7 +410,10 @@ var page = {
 
 				// update total duration
 				$('#totalDurationHolder').html(page.timeEntries.totalDuration);
-				
+
+				// render charts
+				page.renderCharts();
+
 				app.hideProgress('loader');
 				page.fetchInProgress = false;
 			},
@@ -421,6 +424,388 @@ var page = {
 				page.fetchInProgress = false;
 			}
 
+		});
+	},
+
+	/**
+	 * Aggregate data for charts
+	 */
+	aggregateChartData: function() {
+		var data = {
+			timePerCustomer: {},
+			timePerUser: {},
+			timePerWorktype: {},
+			timePerDay: {},
+			timePerProject: {},
+			invoicedStatus: { invoiced: 0, notInvoiced: 0 }
+		};
+
+		page.timeEntries.each(function(entry) {
+			var duration = parseInt(entry.get('duration')) || 0;
+			var customerName = entry.get('customerName') || 'Unknown';
+			var userName = entry.get('userName') || 'Unknown';
+			var categoryName = entry.get('categoryName') || 'Unknown';
+			var projectTitle = entry.get('projectTitle') || 'Unknown';
+			var invoiced = entry.get('invoiced');
+			var startDate = entry.get('start');
+
+			// Time per Customer
+			if (!data.timePerCustomer[customerName]) {
+				data.timePerCustomer[customerName] = 0;
+			}
+			data.timePerCustomer[customerName] += duration;
+
+			// Time per User
+			if (!data.timePerUser[userName]) {
+				data.timePerUser[userName] = 0;
+			}
+			data.timePerUser[userName] += duration;
+
+			// Time per Work Type
+			if (!data.timePerWorktype[categoryName]) {
+				data.timePerWorktype[categoryName] = 0;
+			}
+			data.timePerWorktype[categoryName] += duration;
+
+			// Time per Project
+			if (!data.timePerProject[projectTitle]) {
+				data.timePerProject[projectTitle] = 0;
+			}
+			data.timePerProject[projectTitle] += duration;
+
+			// Time per Day
+			if (startDate) {
+				var dayKey = startDate.split(' ')[0];
+				if (!data.timePerDay[dayKey]) {
+					data.timePerDay[dayKey] = 0;
+				}
+				data.timePerDay[dayKey] += duration;
+			}
+
+			// Invoiced Status
+			if (invoiced == 1 || invoiced == '1') {
+				data.invoicedStatus.invoiced += duration;
+			} else {
+				data.invoicedStatus.notInvoiced += duration;
+			}
+		});
+
+		return data;
+	},
+
+	/**
+	 * Convert minutes to hours
+	 */
+	minutesToHours: function(minutes) {
+		return (minutes / 60).toFixed(2);
+	},
+
+	/**
+	 * Fill in missing dates in date range
+	 */
+	fillMissingDates: function(dataObj) {
+		if (Object.keys(dataObj).length === 0) {
+			return dataObj;
+		}
+
+		var dates = Object.keys(dataObj).sort();
+		var startDate = new Date(dates[0]);
+		var endDate = new Date(dates[dates.length - 1]);
+
+		var result = {};
+		var currentDate = new Date(startDate);
+
+		while (currentDate <= endDate) {
+			var dateStr = currentDate.toISOString().split('T')[0];
+			result[dateStr] = dataObj[dateStr] || 0;
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		return result;
+	},
+
+	/**
+	 * Render all charts
+	 */
+	renderCharts: function() {
+		if (page.timeEntries.length === 0) {
+			$('#chartsContainer').hide();
+			$('#chartsEmptyMessage').show();
+			return;
+		}
+
+		$('#chartsContainer').show();
+		$('#chartsEmptyMessage').hide();
+
+		var chartData = page.aggregateChartData();
+
+		// Color palette for charts
+		var colors = [
+			'#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6',
+			'#1abc9c', '#34495e', '#e67e22', '#95a5a6', '#d35400',
+			'#c0392b', '#27ae60', '#2980b9', '#8e44ad', '#16a085'
+		];
+
+		// Time per Customer
+		page.createBarChart('timePerCustomerChart', 'Time per Customer', chartData.timePerCustomer, colors);
+
+		// Time per User
+		page.createBarChart('timePerUserChart', 'Time per User', chartData.timePerUser, colors);
+
+		// Time per Work Type
+		page.createBarChart('timePerWorktypeChart', 'Time per Work Type', chartData.timePerWorktype, colors);
+
+		// Time per Day
+		var filledDayData = page.fillMissingDates(chartData.timePerDay);
+		page.createLineChart('timePerWeekChart', 'Time per Day', filledDayData);
+
+		// Time per Project
+		page.createBarChart('timePerProjectChart', 'Time per Project', chartData.timePerProject, colors);
+
+		// Invoiced Status
+		page.createInvoicedChart('invoicedStatusChart', 'Invoiced Status', chartData.invoicedStatus);
+	},
+
+	/**
+	 * Create a bar chart
+	 */
+	createBarChart: function(canvasId, title, data, colors) {
+		var ctx = document.getElementById(canvasId).getContext('2d');
+
+		// Destroy existing chart if it exists
+		if (page.chartInstances && page.chartInstances[canvasId]) {
+			page.chartInstances[canvasId].destroy();
+		}
+		if (!page.chartInstances) {
+			page.chartInstances = {};
+		}
+
+		var labels = Object.keys(data);
+		var rawMinutes = labels.map(function(label) {
+			return data[label];
+		});
+		var values = rawMinutes.map(function(minutes) {
+			return page.minutesToHours(minutes);
+		});
+		var totalMinutes = rawMinutes.reduce(function(a, b) { return a + b; }, 0);
+
+		page.chartInstances[canvasId] = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 'Hours',
+					data: values,
+					backgroundColor: colors.slice(0, labels.length),
+					borderColor: colors.slice(0, labels.length),
+					borderWidth: 1
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: true,
+				interaction: {
+					mode: 'nearest',
+					intersect: false
+				},
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				},
+				plugins: {
+					legend: {
+						display: false
+					},
+					tooltip: {
+						enabled: true,
+						backgroundColor: 'rgba(0, 0, 0, 0.8)',
+						padding: 12,
+						titleFont: {
+							size: 13,
+							weight: 'bold'
+						},
+						bodyFont: {
+							size: 12
+						},
+						callbacks: {
+							title: function(context) {
+								return context[0].label;
+							},
+							label: function(context) {
+								var hours = context.parsed.y;
+								var minutes = rawMinutes[context.dataIndex];
+								return [
+									'Hours: ' + hours,
+									'Minutes: ' + minutes
+								];
+							},
+							afterLabel: function(context) {
+								var percentage = ((rawMinutes[context.dataIndex] / totalMinutes) * 100).toFixed(1);
+								return 'Percentage: ' + percentage + '%';
+							}
+						}
+					}
+				}
+			}
+		});
+	},
+
+	/**
+	 * Create a line chart
+	 */
+	createLineChart: function(canvasId, title, data) {
+		var ctx = document.getElementById(canvasId).getContext('2d');
+
+		// Destroy existing chart if it exists
+		if (page.chartInstances && page.chartInstances[canvasId]) {
+			page.chartInstances[canvasId].destroy();
+		}
+		if (!page.chartInstances) {
+			page.chartInstances = {};
+		}
+
+		var sortedKeys = Object.keys(data).sort();
+		var rawMinutes = sortedKeys.map(function(key) {
+			return data[key];
+		});
+		var values = rawMinutes.map(function(minutes) {
+			return page.minutesToHours(minutes);
+		});
+
+		page.chartInstances[canvasId] = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: sortedKeys,
+				datasets: [{
+					label: 'Hours',
+					data: values,
+					borderColor: '#3498db',
+					backgroundColor: 'rgba(52, 152, 219, 0.1)',
+					borderWidth: 2,
+					fill: true,
+					tension: 0.4
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: true,
+				interaction: {
+					mode: 'nearest',
+					intersect: false
+				},
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				},
+				plugins: {
+					legend: {
+						display: false
+					},
+					tooltip: {
+						enabled: true,
+						backgroundColor: 'rgba(0, 0, 0, 0.8)',
+						padding: 12,
+						titleFont: {
+							size: 13,
+							weight: 'bold'
+						},
+						bodyFont: {
+							size: 12
+						},
+						callbacks: {
+							title: function(context) {
+								var date = new Date(context[0].label);
+								return date.toLocaleDateString();
+							},
+							label: function(context) {
+								var hours = context.parsed.y;
+								var minutes = rawMinutes[context.dataIndex];
+								return [
+									'Hours: ' + hours,
+									'Minutes: ' + minutes
+								];
+							}
+						}
+					}
+				}
+			}
+		});
+	},
+
+	/**
+	 * Create invoiced status chart
+	 */
+	createInvoicedChart: function(canvasId, title, data) {
+		var ctx = document.getElementById(canvasId).getContext('2d');
+
+		// Destroy existing chart if it exists
+		if (page.chartInstances && page.chartInstances[canvasId]) {
+			page.chartInstances[canvasId].destroy();
+		}
+		if (!page.chartInstances) {
+			page.chartInstances = {};
+		}
+
+		var invoicedMinutes = data.invoiced;
+		var notInvoicedMinutes = data.notInvoiced;
+		var totalMinutes = invoicedMinutes + notInvoicedMinutes;
+
+		page.chartInstances[canvasId] = new Chart(ctx, {
+			type: 'doughnut',
+			data: {
+				labels: ['Invoiced', 'Not Invoiced'],
+				datasets: [{
+					data: [
+						page.minutesToHours(invoicedMinutes),
+						page.minutesToHours(notInvoicedMinutes)
+					],
+					backgroundColor: ['#2ecc71', '#e74c3c'],
+					borderColor: ['#27ae60', '#c0392b'],
+					borderWidth: 1
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: true,
+				interaction: {
+					mode: 'nearest',
+					intersect: false
+				},
+				plugins: {
+					legend: {
+						position: 'bottom'
+					},
+					tooltip: {
+						enabled: true,
+						backgroundColor: 'rgba(0, 0, 0, 0.8)',
+						padding: 12,
+						titleFont: {
+							size: 13,
+							weight: 'bold'
+						},
+						bodyFont: {
+							size: 12
+						},
+						callbacks: {
+							label: function(context) {
+								var label = context.label || '';
+								var hours = context.parsed || 0;
+								var minutes = context.dataIndex === 0 ? invoicedMinutes : notInvoicedMinutes;
+								var percentage = totalMinutes > 0 ? ((minutes / totalMinutes) * 100).toFixed(1) : 0;
+
+								return [
+									label,
+									'Hours: ' + hours,
+									'Minutes: ' + minutes,
+									'Percentage: ' + percentage + '%'
+								];
+							}
+						}
+					}
+				}
+			}
 		});
 	}
 

@@ -16,11 +16,12 @@
 	.script("scripts/view.js").wait()
 	.script("scripts/app/reports.js").wait()
 	.script("scripts/timecase.js").wait()
+	.script("chartjs/chart.js").wait()
 	.script("scripts/app/reports.js").wait(function(){
 		$(document).ready(function(){
 			page.init();
 		});
-		
+
 		// hack for IE9 which may respond inconsistently with document.ready
 		setTimeout(function(){
 			if (!page.isInitialized) page.init();
@@ -205,11 +206,57 @@
 </div>
 </div> <!-- /row -->
 
+<!-- Charts Section -->
+<div class="row">
+<div class="span12">
+	<hr>
+	<h3>Analytics</h3>
+
+	<div id="chartsContainer" style="display: none;">
+		<div class="row">
+			<div class="span6">
+				<h4>Time per Customer</h4>
+				<canvas id="timePerCustomerChart" height="100"></canvas>
+			</div>
+			<div class="span6">
+				<h4>Time per User</h4>
+				<canvas id="timePerUserChart" height="100"></canvas>
+			</div>
+		</div>
+
+		<div class="row" style="margin-top: 30px;">
+			<div class="span6">
+				<h4>Time per Work Type</h4>
+				<canvas id="timePerWorktypeChart" height="100"></canvas>
+			</div>
+			<div class="span6">
+				<h4>Time per Week</h4>
+				<canvas id="timePerWeekChart" height="100"></canvas>
+			</div>
+		</div>
+
+		<div class="row" style="margin-top: 30px;">
+			<div class="span6">
+				<h4>Time per Project</h4>
+				<canvas id="timePerProjectChart" height="100"></canvas>
+			</div>
+			<div class="span6">
+				<h4>Invoiced vs Not Invoiced</h4>
+				<canvas id="invoicedStatusChart" height="100"></canvas>
+			</div>
+		</div>
+	</div>
+	<div id="chartsEmptyMessage" style="text-align: center; color: #999; padding: 20px;">
+		No data available for charts
+	</div>
+</div>
+</div> <!-- /row -->
+
 	<!-- footer -->
 	<hr>
 
 	<footer>
-		
+
 	</footer>
 
 </div> <!-- /container -->
