@@ -401,7 +401,7 @@ input[type="text"] {
 }
 
 .navbar .nav > li.active > a {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 	color: #ffffff !important;
 }
 
@@ -429,7 +429,7 @@ input[type="text"] {
 }
 
 .dropdown-menu > li > a:hover {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 	color: #ffffff !important;
 }
 
@@ -461,7 +461,7 @@ textarea:focus,
 select:focus {
 	background-color: #2d2d2d !important;
 	color: #e0e0e0 !important;
-	border-color: #2eac99 !important;
+	border-color: #26558c !important;
 	box-shadow: 0 0 8px rgba(26, 188, 156, 0.3) !important;
 }
 
@@ -484,20 +484,20 @@ input[type="text"]::placeholder {
 }
 
 .btn.active {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 	color: #ffffff !important;
-	border-color: #2eac99 !important;
+	border-color: #26558c !important;
 }
 
 .btn-primary {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 	color: #ffffff !important;
-	border-color: #2eac99 !important;
+	border-color: #26558c !important;
 }
 
 .btn-primary:hover {
-	background-color: #3dc0ae !important;
-	border-color: #3dc0ae !important;
+	background-color: #22456e !important;
+	border-color: #22456e !important;
 }
 
 /* Search filter button */
@@ -509,7 +509,7 @@ input[type="text"]::placeholder {
 
 .input-append button.add-on:hover {
 	background-color: #404040 !important;
-	color: #2eac99 !important;
+	color: #26558c !important;
 }
 
 /* Modal dialogs */
@@ -555,11 +555,11 @@ label {
 
 /* Links */
 a {
-	color: #2eac99 !important;
+	color: #26558c !important;
 }
 
 a:hover {
-	color: #3dc0ae !important;
+	color: #22456e !important;
 }
 
 /* Progress bars */
@@ -569,7 +569,7 @@ a:hover {
 }
 
 .bar {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 }
 
 /* Footer */
@@ -615,13 +615,13 @@ span.loader {
 }
 
 .datepicker table tr td.today {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 	color: #ffffff !important;
 }
 
 .datepicker table tr td.active,
 .datepicker table tr td.active:hover {
-	background-color: #2eac99 !important;
+	background-color: #26558c !important;
 	color: #ffffff !important;
 }
 
@@ -699,12 +699,12 @@ li {
 
 .pagination a:hover {
 	background-color: #3a3a3a !important;
-	color: #2eac99 !important;
+	color: #26558c !important;
 }
 
 .pagination .active a {
-	background-color: #2eac99 !important;
-	border-color: #2eac99 !important;
+	background-color: #26558c !important;
+	border-color: #26558c !important;
 	color: #ffffff !important;
 }
 
@@ -720,7 +720,7 @@ input[type="radio"] {
 	border: 2px solid #444444 !important;
 	border-radius: 3px !important;
 	cursor: pointer !important;
-	accent-color: #2eac99 !important;
+	accent-color: #26558c !important;
 }
 
 input[type="radio"] {
@@ -729,8 +729,8 @@ input[type="radio"] {
 
 input[type="checkbox"]:checked,
 input[type="radio"]:checked {
-	background-color: #2eac99 !important;
-	border-color: #2eac99 !important;
+	background-color: #26558c !important;
+	border-color: #26558c !important;
 	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="white"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>') !important;
 	background-repeat: no-repeat !important;
 	background-position: center !important;

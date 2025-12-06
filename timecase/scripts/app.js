@@ -225,27 +225,48 @@ $(document).on('show', '.modal', function() {
 });
 
 /**
- * Fix mobile dropdown collapse issue
- * Auto-expand all dropdowns on mobile so user doesn't need to click them individually
+ * Fix Bootstrap 2.x mobile dropdown touch issue
+ * Bootstrap 2.x binds to touchstart which only works while holding down
+ * This handler converts that to proper tap-to-toggle behavior using touchend
  */
-// $(document).ready(function() {
-// 	function setupDropdowns() {
-// 		if ($(window).width() < 768) {
-// 			// On mobile, expand all dropdowns by default and prevent collapsing
-// 			$('.nav-collapse .dropdown-menu').show();
-// 			$('.nav-collapse .dropdown').addClass('open');
-// 		} else {
-// 			// On desktop, allow normal dropdown toggle behavior
-// 			$('.nav-collapse .dropdown-menu').removeAttr('style');
-// 			$('.nav-collapse .dropdown').removeClass('open');
-// 		}
-// 	}
+$(document).ready(function() {
+	// Remove Bootstrap's native dropdown handlers that use touchstart
+	$(document).off('click.dropdown.data-api touchstart.dropdown.data-api');
 
-// 	setupDropdowns();
+	// Handle dropdown toggles for both touch and click
+	$(document).on('click touchend', '[data-toggle=dropdown]', function(e) {
+		console.log(e, e.type)
+		// Don't double-trigger on click devices that support both touch and click
+		if (e.type === 'touchend' || !('ontouchstart' in window)) {
+			e.preventDefault();
+			e.stopPropagation();
 
-// 	// Re-run on window resize
-// 	$(window).on('resize', setupDropdowns);
-// });
+			var $dropdown = $(this).closest('.dropdown');
+			var wasOpen = $dropdown.hasClass('open');
+
+			// Close all other dropdowns
+			$('.dropdown').removeClass('open');
+
+			// Toggle this one if it wasn't already open
+			if (!wasOpen) {
+				$dropdown.addClass('open');
+			}
+		}
+	});
+
+	// Close dropdowns when clicking/tapping outside
+	$(document).on('click touchend', function(e) {
+		// Don't close if the tap/click was on a dropdown toggle
+		if ($(e.target).closest('[data-toggle=dropdown]').length) {
+			return;
+		}
+		// Don't interfere with clicks on dropdown menu items - let them navigate
+		if ($(e.target).closest('.dropdown-menu').length) {
+			return;
+		}
+		$('.dropdown').removeClass('open');
+	});
+});
 
 /**
  * Fix dropdown positioning in scrollable containers
