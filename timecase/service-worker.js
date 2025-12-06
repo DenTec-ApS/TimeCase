@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timecase-v12';
+const CACHE_NAME = 'timecase-v14';
 const urlsToCache = [
   '/',
   '/index.php',
