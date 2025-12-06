@@ -88,14 +88,10 @@ class CustomerReporter extends Reporter
 	 */
 	public static function CalculateABCClassification(&$rows, $phreezer = null)
 	{
-		// Calculate grand total from the rows themselves (each row already has their total)
-		$grandTotal = 0;
-		foreach ($rows as $row) {
-			$hours = isset($row->totalHours) ? $row->totalHours : (isset($row->TotalHours) ? $row->TotalHours : 0);
-			$grandTotal += (float)$hours;
-		}
+		// Get the grand total of ALL time entries across the entire company
+		$grandTotal = self::GetGrandTotalHours($phreezer);
 
-		// If no data, return early
+		// If no total hours exist, set all to 0% and C class
 		if ($grandTotal == 0) {
 			foreach ($rows as $row) {
 				$row->percentageOfTotal = 0;
@@ -106,14 +102,17 @@ class CustomerReporter extends Reporter
 
 		// Calculate percentage and assign ABC class for each row
 		foreach ($rows as $row) {
-			// Handle both camelCase (from ToObjectArray) and PascalCase (raw objects)
-			$hours = isset($row->totalHours) ? $row->totalHours : (isset($row->TotalHours) ? $row->TotalHours : 0);
-			$percentage = ((float)$hours / $grandTotal) * 100;
+			$hours = 0;
+			if (isset($row->totalHours)) {
+				$hours = $row->totalHours;
+			} elseif (isset($row->TotalHours)) {
+				$hours = $row->TotalHours;
+			}
 
-			// Always set camelCase properties (matching JSON output format)
+			$percentage = ((float)$hours / $grandTotal) * 100;
 			$row->percentageOfTotal = round($percentage, 2);
 
-			// Assign ABC class based on percentage thresholds
+			// Assign ABC class based on percentage thresholds (70-20-10 Pareto principle)
 			if ($percentage >= 70) {
 				$row->aBCClass = 'A';
 			} elseif ($percentage >= 20) {
@@ -143,12 +142,10 @@ class CustomerReporter extends Reporter
 		}
 
 		// Query to get sum of all time entries
-		$sql = "SELECT COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as GrandTotal
-				FROM time_entries te
-				WHERE te.start IS NOT NULL AND te.end IS NOT NULL";
+		$sql = "SELECT COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as GrandTotal FROM time_entries te WHERE te.start IS NOT NULL AND te.end IS NOT NULL";
 
 		try {
-			$rs = $phreezer->DataAdapter->Execute($sql);
+			$rs = $phreezer->DataAdapter->Select($sql);
 			$row = $phreezer->DataAdapter->Fetch($rs);
 			$phreezer->DataAdapter->Release($rs);
 
