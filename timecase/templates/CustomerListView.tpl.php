@@ -87,6 +87,8 @@
 				<th id="header_Tel"><i class="icon-phone"></i>&nbsp; Phone<# if (page.orderBy == 'Tel') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_StatusId"><i class="icon-info-sign"></i>&nbsp; Status<# if (page.orderBy == 'StatusId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_TotalHours"><i class="icon-time"></i>&nbsp; Total Hours<# if (page.orderBy == 'TotalHours') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+			<th id="header_PercentageOfTotal"><i class="icon-percent"></i>&nbsp; % of Total<# if (page.orderBy == 'PercentageOfTotal') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+			<th id="header_ABCClass"><i class="icon-tag"></i>&nbsp; ABC Class<# if (page.orderBy == 'ABCClass') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 							
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
 				<th id="header_Location"><i class="icon-reorder"></i>&nbsp; Location<# if (page.orderBy == 'Location') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
@@ -110,6 +112,8 @@
 				<td><#= _.escape(item.get('tel') || '') #></td>
 				<td><#= _.escape(item.get('statusDescription') || '') #></td>
 				<td><#= app.formatHours(item.get('totalHours') || 0) #></td>
+			<td><#= _.escape((parseFloat(item.get('percentageOfTotal')) || 0).toFixed(1)) #>%</td>
+			<td><span class="label <#= item.get('aBCClass') === 'A' ? 'label-success' : (item.get('aBCClass') === 'B' ? 'label-warning' : 'label-info') #>"><#= _.escape(item.get('aBCClass') || 'N/A') #></span></td>
 				
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
 				<td><#= _.escape(item.get('location') || '') #></td>

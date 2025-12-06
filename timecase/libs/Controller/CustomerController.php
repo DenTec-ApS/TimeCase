@@ -33,7 +33,7 @@ class CustomerController extends AppBaseController
 		$this->RequirePermission(
 				self::$ROLE_ADMIN |
 				self::$ROLE_MANAGER, 'User.LoginForm');
-		
+
 		$this->Render();
 	}
 
@@ -47,32 +47,32 @@ class CustomerController extends AppBaseController
 				self::$ROLE_MANAGER |
 				self::$ROLE_ADVANCED_USER |
 				self::$ROLE_CUSTOMER, 'User.LoginForm');
-		
+
 		try
 		{
 
 			$criteria = new CustomerCriteria();
-			
+
 			// skip if calling from another controller (reports)
 			if ($returnJSON){
 				$url_filer = $this->GetRouter()->GetUrlParam('filter');
-				
+
 				// show only active records
 				if ($url_filer == 'active')
 					$criteria->StatusId_NotEquals = '3';
 			}
-				
+
 			// for customers show only them
 			if ($this->IsAuthorized(self::$ROLE_CUSTOMER)){
 				$criteria->AddFilter(new CriteriaFilter('Id', $this->GetCurrentUser()->CustomerId));
 			}
-			
+
 			$filter = RequestUtil::Get('filter');
 			if ($filter) $criteria->AddFilter(
 				new CriteriaFilter('Id,Name,ContactPerson,Email,Address,Location,Web,Tel,Tel2,Description'
 				, '%'.$filter.'%')
 			);
-			
+
 
 			foreach (array_keys($_REQUEST) as $prop)
 			{
@@ -88,7 +88,7 @@ class CustomerController extends AppBaseController
 					$criteria->$prop_equals = RequestUtil::Get($prop);
 				}
 			}
-			
+
 			$output = new stdClass();
 
 			// if a sort order was specified then specify in the criteria
@@ -126,20 +126,24 @@ class CustomerController extends AppBaseController
 				$output->currentPage = 1;
 			}
 
-			// mask some data 
+			// Calculate ABC classification based on percentage of total hours
+			require_once "Reporter/CustomerReporter.php";
+			CustomerReporter::CalculateABCClassification($output->rows);
+
+			// mask some data
 			if (!$this->IsAuthorized(self::$ROLE_ADMIN | self::$ROLE_MANAGER)){
 				foreach ($output->rows as &$row){
 					foreach ($row as $key => $field)
-						if ($key != 'id' && $key != 'name' && $key != 'totalHours') unset($row->$key);
+						if ($key != 'id' && $key != 'name' && $key != 'totalHours' && $key != 'percentageOfTotal' && $key != 'aBCClass') unset($row->$key);
 
 				}
 			}
-			
+
 			if ($returnJSON)
 				$this->RenderJSON($output, $this->JSONPCallback());
 			else
 				return $output->rows;
-			
+
 		}
 		catch (Exception $ex)
 		{
@@ -156,9 +160,9 @@ class CustomerController extends AppBaseController
 	public function Read()
 	{
 		$this->RequirePermission(
-				self::$ROLE_ADMIN | 
+				self::$ROLE_ADMIN |
 				self::$ROLE_MANAGER, 'User.LoginForm');
-		
+
 		try
 		{
 			$pk = $this->GetRouter()->GetUrlParam('id');
@@ -179,10 +183,10 @@ class CustomerController extends AppBaseController
 		$this->RequirePermission(
 				self::$ROLE_ADMIN |
 				self::$ROLE_MANAGER, 'User.LoginForm');
-		
+
 		try
 		{
-						
+
 			$json = json_decode(RequestUtil::GetBody());
 
 			if (!$json)
@@ -202,7 +206,7 @@ class CustomerController extends AppBaseController
 			$customer->Tel2 = $this->SafeGetVal($json, 'tel2');
 			$customer->StatusId = $this->SafeGetVal($json, 'statusId');
 			$customer->Description = $this->SafeGetVal($json, 'description');
-			
+
 			$customer->Password = $this->SafeGetVal($json, 'password');
 			if ($customer->Password != ''){
 				$customer->Password = password_hash($customer->Password , PASSWORD_BCRYPT);
@@ -239,10 +243,10 @@ class CustomerController extends AppBaseController
 		$this->RequirePermission(
 				self::$ROLE_ADMIN |
 				self::$ROLE_MANAGER, 'User.LoginForm');
-		
+
 		try
 		{
-						
+
 			$json = json_decode(RequestUtil::GetBody());
 
 			if (!$json)
@@ -264,7 +268,7 @@ class CustomerController extends AppBaseController
 			$customer->Tel2 = $this->SafeGetVal($json, 'tel2', $customer->Tel2);
 			$customer->StatusId = $this->SafeGetVal($json, 'statusId', $customer->StatusId);
 			$customer->Description = $this->SafeGetVal($json, 'description', $customer->Description);
-			
+
 			$customer->Email = $this->SafeGetVal($json, 'email');
 			if ($customer->Email == '') $customer->Email = null;
 
@@ -272,7 +276,7 @@ class CustomerController extends AppBaseController
 			if ($pw_tmp != ''){
 				$customer->Password = password_hash($pw_tmp, PASSWORD_BCRYPT);
 			}
-			
+
 			$customer->Validate();
 			$errors = $customer->GetValidationErrors();
 
@@ -304,10 +308,10 @@ class CustomerController extends AppBaseController
 		$this->RequirePermission(
 				self::$ROLE_ADMIN |
 				self::$ROLE_MANAGER, 'User.LoginForm');
-		
+
 		try
 		{
-						
+
 			$pk = $this->GetRouter()->GetUrlParam('id');
 			$customer = $this->Phreezer->Get('Customer',$pk);
 
