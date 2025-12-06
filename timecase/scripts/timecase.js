@@ -39,10 +39,8 @@ function myTimer(options) {
 		hours = '';
 	}else if (hours < 10){
 		hours = '0' + hours + ':';
-		secs = '';
 	}else{
 		hours = hours + ":";
-		secs = '';
 	}
 	
 	var total = days + hours + minutes + secs;

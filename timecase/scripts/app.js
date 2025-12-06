@@ -213,3 +213,36 @@ var app = {
 	version: 1.1
 
 }
+
+/**
+ * Initialize modal event handlers to prevent body scrolling on mobile
+ * Bootstrap 2.x doesn't automatically add/remove the modal-open class
+ */
+$(document).on('show', '.modal', function() {
+	$('body').addClass('modal-open');
+}).on('hidden', '.modal', function() {
+	$('body').removeClass('modal-open');
+});
+
+/**
+ * Fix mobile dropdown collapse issue
+ * Auto-expand all dropdowns on mobile so user doesn't need to click them individually
+ */
+$(document).ready(function() {
+	function setupDropdowns() {
+		if ($(window).width() < 768) {
+			// On mobile, expand all dropdowns by default and prevent collapsing
+			$('.nav-collapse .dropdown-menu').show();
+			$('.nav-collapse .dropdown').addClass('open');
+		} else {
+			// On desktop, allow normal dropdown toggle behavior
+			$('.nav-collapse .dropdown-menu').removeAttr('style');
+			$('.nav-collapse .dropdown').removeClass('open');
+		}
+	}
+
+	setupDropdowns();
+
+	// Re-run on window resize
+	$(window).on('resize', setupDropdowns);
+});

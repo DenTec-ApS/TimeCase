@@ -9,13 +9,37 @@ body {
 	color: #e0e0e0 !important;
 }
 
+body.modal-open {
+	overflow: hidden !important;
+}
+
 /* modal vertical scroll fix for mobile */
 @media (max-width :770px) {
-.modal{
-	position: relative!important;
+.modal {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	height: 100vh !important;
+	margin: 0 !important;
+	border-radius: 0 !important;
 }
-.modal-body{
-	max-height:none;
+.modal-body {
+	height: calc(100vh - 140px) !important;
+	overflow-y: auto !important;
+}
+}
+@media (min-width :770px) {
+.modal {
+	max-height: 80vh !important;
+	/* overflow: scroll; */
+}
+.modal-body {
+	max-height: 60vh !important;
+	overflow: auto;
 }
 }
 
@@ -61,6 +85,7 @@ body {
 
 h1 {
 	margin-bottom: 8px;
+	font-size: 28px;
 }
 
 .rtext {
@@ -182,6 +207,10 @@ span.loader .bar {
 	display: block;
 	float: right;
 	padding: 7px 5px;
+}
+
+legend {
+	color: #e0e0e0;
 }
 
 footer {
@@ -451,6 +480,12 @@ input[type="text"]::placeholder {
 /* Modal dialogs */
 .modal {
 	background-color: #1a1a1a !important;
+	/* max-height: 90vh !important; */
+}
+
+.modal-body {
+	/* max-height: 83vh !important; */
+	overflow-y: auto !important;
 }
 
 .modal-header {
