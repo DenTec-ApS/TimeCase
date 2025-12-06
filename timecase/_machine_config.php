@@ -54,11 +54,4 @@ if (GlobalConfig::$CONNECTION_SETTING->Multibyte && !function_exists('mb_strlen'
 // GlobalConfig::$LEVEL_2_CACHE_TEMP_PATH = sys_get_temp_dir();
 // GlobalConfig::$LEVEL_2_CACHE_TIMEOUT = 15;
 
-/** SESSION CONFIGURATION
- * Set session timeout to 30 days (2592000 seconds)
- * This prevents automatic logout due to inactivity
- */
-ini_set('session.gc_maxlifetime', 2592000);
-ini_set('session.cookie_lifetime', 2592000);
-
 /** additional machine-specific settings */
