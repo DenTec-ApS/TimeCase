@@ -62,6 +62,22 @@ body.modal-open {
 }
 }
 
+/* Fix dropdown positioning in scrollable containers */
+.combobox-container {
+	position: relative !important;
+}
+
+.dropdown-menu {
+	/* position: fixed !important; */
+	z-index: 1050 !important;
+}
+
+/* Ensure dropdowns don't get clipped by overflow:hidden */
+.control-group,
+.controls {
+	overflow: visible !important;
+}
+
 .collectionContainer{
 	overflow-x: auto;
 	overflow-y: visible;

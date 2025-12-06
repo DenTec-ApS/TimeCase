@@ -11,7 +11,7 @@
 	.script("scripts/libs/underscore-min.js").wait()
 	.script("scripts/libs/underscore.date.min.js")
 	.script("scripts/libs/backbone.js")
-	.script("scripts/app.js")
+	.script("scripts/app.js?v=1")
 	.script("scripts/model.js").wait()
 	.script("scripts/view.js").wait()
 	.script("scripts/timecase.js").wait()

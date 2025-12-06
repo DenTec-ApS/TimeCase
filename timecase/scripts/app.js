@@ -228,21 +228,90 @@ $(document).on('show', '.modal', function() {
  * Fix mobile dropdown collapse issue
  * Auto-expand all dropdowns on mobile so user doesn't need to click them individually
  */
+// $(document).ready(function() {
+// 	function setupDropdowns() {
+// 		if ($(window).width() < 768) {
+// 			// On mobile, expand all dropdowns by default and prevent collapsing
+// 			$('.nav-collapse .dropdown-menu').show();
+// 			$('.nav-collapse .dropdown').addClass('open');
+// 		} else {
+// 			// On desktop, allow normal dropdown toggle behavior
+// 			$('.nav-collapse .dropdown-menu').removeAttr('style');
+// 			$('.nav-collapse .dropdown').removeClass('open');
+// 		}
+// 	}
+
+// 	setupDropdowns();
+
+// 	// Re-run on window resize
+// 	$(window).on('resize', setupDropdowns);
+// });
+
+/**
+ * Fix dropdown positioning in scrollable containers
+ * Handle combobox typeahead dropdowns positioning
+ */
 $(document).ready(function() {
-	function setupDropdowns() {
-		if ($(window).width() < 768) {
-			// On mobile, expand all dropdowns by default and prevent collapsing
-			$('.nav-collapse .dropdown-menu').show();
-			$('.nav-collapse .dropdown').addClass('open');
-		} else {
-			// On desktop, allow normal dropdown toggle behavior
-			$('.nav-collapse .dropdown-menu').removeAttr('style');
-			$('.nav-collapse .dropdown').removeClass('open');
-		}
+	function positionTypeahead($trigger, $menu) {
+		if (!$trigger.length || !$menu.length) return;
+
+		var triggerRect = $trigger[0].getBoundingClientRect();
+		var containerRect = $trigger.closest('.combobox-container')[0].getBoundingClientRect();
+
+		// Position relative to viewport
+		$menu.css({
+			position: 'fixed',
+			top: (triggerRect.bottom) + 'px',
+			left: containerRect.left + 'px',
+			zIndex: 1050
+		});
 	}
 
-	setupDropdowns();
+	// Position typeahead when dropdown toggle is clicked
+	$(document).on('click', '.combobox-container .dropdown-toggle', function() {
+		var $container = $(this).closest('.combobox-container');
+		var $menu = $container.find('.typeahead');
+		var $trigger = $(this);
 
-	// Re-run on window resize
-	$(window).on('resize', setupDropdowns);
+		if ($menu.is(':visible')) {
+			positionTypeahead($trigger, $menu);
+		}
+	});
+
+	// Reposition on any scroll event (window, element, or modal scroll)
+	$(window).on('scroll resize', function() {
+		var $visibleMenus = $('.typeahead:visible');
+		$visibleMenus.each(function() {
+			var $menu = $(this);
+			var $container = $menu.closest('.combobox-container');
+			var $trigger = $container.find('.dropdown-toggle');
+			positionTypeahead($trigger, $menu);
+		});
+	});
+
+	// Also listen for scroll on all scrollable parents
+	$(document).on('scroll', '*', function() {
+		var $visibleMenus = $('.typeahead:visible');
+		$visibleMenus.each(function() {
+			var $menu = $(this);
+			var $container = $menu.closest('.combobox-container');
+			var $trigger = $container.find('.dropdown-toggle');
+			positionTypeahead($trigger, $menu);
+		});
+	});
+
+	// Close typeahead when clicking outside
+	$(document).on('click', function(e) {
+		var $target = $(e.target);
+		var $openMenus = $('.typeahead:visible');
+
+		if (!$openMenus.length) return;
+
+		// Don't close if clicking on typeahead or combobox
+		if ($target.closest('.typeahead').length || $target.closest('.combobox-container').length) {
+			return;
+		}
+
+		$openMenus.hide();
+	});
 });
