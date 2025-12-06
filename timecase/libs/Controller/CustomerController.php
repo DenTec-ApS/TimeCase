@@ -128,7 +128,7 @@ class CustomerController extends AppBaseController
 
 			// Calculate ABC classification based on percentage of total hours
 			require_once "Reporter/CustomerReporter.php";
-			CustomerReporter::CalculateABCClassification($output->rows);
+			CustomerReporter::CalculateABCClassification($output->rows, $this->Phreezer);
 
 			// mask some data
 			if (!$this->IsAuthorized(self::$ROLE_ADMIN | self::$ROLE_MANAGER)){

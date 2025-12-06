@@ -82,13 +82,15 @@ class CustomerReporter extends Reporter
 	/**
 	 * Post-process the results to calculate percentage of total and ABC class
 	 * This is called after the query results are retrieved
+	 *
+	 * @param array $rows The rows to update with percentage and ABC classification
+	 * @param Phreezer $phreezer The Phreezer instance for querying (optional)
 	 */
-	public static function CalculateABCClassification(&$rows)
+	public static function CalculateABCClassification(&$rows, $phreezer = null)
 	{
-		// Calculate grand total of all hours
+		// Calculate grand total from the rows themselves (each row already has their total)
 		$grandTotal = 0;
 		foreach ($rows as $row) {
-			// Handle both camelCase (from ToObjectArray) and PascalCase (raw objects)
 			$hours = isset($row->totalHours) ? $row->totalHours : (isset($row->TotalHours) ? $row->TotalHours : 0);
 			$grandTotal += (float)$hours;
 		}
@@ -119,6 +121,54 @@ class CustomerReporter extends Reporter
 			} else {
 				$row->aBCClass = 'C';
 			}
+		}
+	}
+
+	/**
+	 * Get the grand total of hours across all customers
+	 *
+	 * @param Phreezer $phreezer The Phreezer instance
+	 * @return float The total hours across all customers
+	 */
+	public static function GetGrandTotalHours($phreezer = null)
+	{
+		// If no phreezer provided, try to use global or static reference
+		if ($phreezer === null) {
+			global $Phreezer;
+			$phreezer = $Phreezer;
+		}
+
+		if ($phreezer === null) {
+			return 0;
+		}
+
+		// Query to get sum of all time entries
+		$sql = "SELECT COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as GrandTotal
+				FROM time_entries te
+				WHERE te.start IS NOT NULL AND te.end IS NOT NULL";
+
+		try {
+			$rs = $phreezer->DataAdapter->Execute($sql);
+			$row = $phreezer->DataAdapter->Fetch($rs);
+			$phreezer->DataAdapter->Release($rs);
+
+			if ($row) {
+				// Try different possible column names (case-insensitive keys)
+				if (isset($row['GrandTotal'])) {
+					return (float)$row['GrandTotal'];
+				}
+				if (isset($row['grandtotal'])) {
+					return (float)$row['grandtotal'];
+				}
+				// Get first value if keys are different
+				$values = array_values($row);
+				if (!empty($values)) {
+					return (float)$values[0];
+				}
+			}
+			return 0;
+		} catch (Exception $e) {
+			return 0;
 		}
 	}
 }
