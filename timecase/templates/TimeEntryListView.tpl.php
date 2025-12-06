@@ -302,7 +302,7 @@
 				<div id="descriptionInputContainer" class="control-group">
 					<label class="control-label" for="description">Description</label>
 					<div class="controls inline-inputs">
-						<textarea class="input-xlarge" id="description" rows="3"><#= _.escape(item.get('description') || '') #></textarea>
+						<textarea class="input-xlarge" id="description" rows="6"><#= _.escape(item.get('description') || '') #></textarea>
 						<span class="help-inline"></span>
 					</div>
 				</div>
