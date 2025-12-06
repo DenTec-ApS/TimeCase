@@ -83,43 +83,105 @@ class CustomerReporter extends Reporter
 	 * Post-process the results to calculate percentage of total and ABC class
 	 * This is called after the query results are retrieved
 	 *
-	 * @param array $rows The rows to update with percentage and ABC classification
+	 * @param array $rows The rows to update with percentage and ABC classification (paginated)
 	 * @param Phreezer $phreezer The Phreezer instance for querying (optional)
 	 */
 	public static function CalculateABCClassification(&$rows, $phreezer = null)
 	{
-		// Get the grand total of ALL time entries across the entire company
-		$grandTotal = self::GetGrandTotalHours($phreezer);
+		// Get ABC classifications for all customers (not paginated)
+		$abcMap = self::GetABCClassificationMap($phreezer);
 
-		// If no total hours exist, set all to 0% and C class
-		if ($grandTotal == 0) {
-			foreach ($rows as $row) {
+		// Apply the classifications to the paginated rows
+		foreach ($rows as $row) {
+			$customerId = isset($row->id) ? $row->id : $row->Id;
+
+			if (isset($abcMap[$customerId])) {
+				$row->percentageOfTotal = $abcMap[$customerId]['percentage'];
+				$row->aBCClass = $abcMap[$customerId]['class'];
+			} else {
+				// Fallback if customer not found
 				$row->percentageOfTotal = 0;
 				$row->aBCClass = 'C';
 			}
-			return;
+		}
+	}
+
+	/**
+	 * Get ABC classification map for all customers
+	 * Calculates classification based on cumulative percentage across entire dataset
+	 *
+	 * @param Phreezer $phreezer The Phreezer instance for querying
+	 * @return array Map of customer ID => ['percentage' => float, 'class' => string]
+	 */
+	public static function GetABCClassificationMap($phreezer = null)
+	{
+		if ($phreezer === null) {
+			global $Phreezer;
+			$phreezer = $Phreezer;
 		}
 
-		// Calculate percentage and assign ABC class for each row
-		foreach ($rows as $row) {
-			$hours = 0;
-			if (isset($row->totalHours)) {
-				$hours = $row->totalHours;
-			} elseif (isset($row->TotalHours)) {
-				$hours = $row->TotalHours;
+		if ($phreezer === null) {
+			return [];
+		}
+
+		// Get grand total
+		$grandTotal = self::GetGrandTotalHours($phreezer);
+
+		if ($grandTotal == 0) {
+			return [];
+		}
+
+		// Query all customers with their hours (no pagination)
+		$sql = "SELECT
+			`customers`.`id` as Id,
+			COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as TotalHours
+		FROM `customers`
+		LEFT JOIN time_entries te ON te.customer_id = customers.id
+		GROUP BY customers.id
+		ORDER BY TotalHours DESC";
+
+		try {
+			$rs = $phreezer->DataAdapter->Select($sql);
+			$allCustomers = [];
+
+			while ($row = $phreezer->DataAdapter->Fetch($rs)) {
+				$customerId = $row['Id'];
+				$hours = (float)$row['TotalHours'];
+				$percentage = ($hours / $grandTotal) * 100;
+
+				$allCustomers[$customerId] = [
+					'hours' => $hours,
+					'percentage' => round($percentage, 2)
+				];
+			}
+			$phreezer->DataAdapter->Release($rs);
+
+			// Calculate cumulative percentage and assign ABC classes
+			$abcMap = [];
+			$cumulativePercentage = 0;
+
+			foreach ($allCustomers as $customerId => $data) {
+				// Determine class based on cumulative BEFORE adding this customer
+				if ($cumulativePercentage < 80) {
+					$class = 'A';
+				} elseif ($cumulativePercentage < 95) {
+					$class = 'B';
+				} else {
+					$class = 'C';
+				}
+
+				$abcMap[$customerId] = [
+					'percentage' => $data['percentage'],
+					'class' => $class
+				];
+
+				// Add to cumulative after assigning class
+				$cumulativePercentage += $data['percentage'];
 			}
 
-			$percentage = ((float)$hours / $grandTotal) * 100;
-			$row->percentageOfTotal = round($percentage, 2);
-
-			// Assign ABC class based on percentage thresholds (70-20-10 Pareto principle)
-			if ($percentage >= 70) {
-				$row->aBCClass = 'A';
-			} elseif ($percentage >= 20) {
-				$row->aBCClass = 'B';
-			} else {
-				$row->aBCClass = 'C';
-			}
+			return $abcMap;
+		} catch (Exception $e) {
+			return [];
 		}
 	}
 
