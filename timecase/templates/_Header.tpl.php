@@ -89,7 +89,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</a>
-			<a class="brand" href="" style="padding: 0 40px 0 20px; display: flex; align-items: center; height: 50px"><img src="images/denetc-logo.png" alt="TimeCase" width="140px" /></a>
+			<a class="brand" href="/" style="padding: 0 40px 0 20px; display: flex; align-items: center; height: 50px"><img src="images/denetc-logo.png" alt="TimeCase" width="140px" /></a>
 			
 			<span id="currentTimetrack"></span>
 			
