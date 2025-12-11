@@ -36,6 +36,7 @@ class CustomerReporter extends Reporter
 	public $Tel2;
 	public $StatusId;
 	public $Description;
+	public $SaldiKundenr;
 
 	/*
 	* GetCustomQuery returns a fully formed SQL statement.  The result columns
@@ -59,6 +60,7 @@ class CustomerReporter extends Reporter
 			,`customers`.`tel2` as Tel2
 			,`customers`.`status_id` as StatusId
 			,`customers`.`description` as Description
+			,`customers`.`saldi_kundenr` as SaldiKundenr
 			,COALESCE(ROUND(SUM(TIMESTAMPDIFF(MINUTE, te.start, te.end)) / 60.0, 2), 0) as TotalHours
 			,0 as PercentageOfTotal
 			,'C' as ABCClass

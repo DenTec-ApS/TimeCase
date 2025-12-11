@@ -76,6 +76,15 @@ GlobalConfig::$TEMPLATE_ENGINE = 'SavantRenderEngine';
 GlobalConfig::$TEMPLATE_PATH = GlobalConfig::$APP_ROOT . '/templates/';
 
 /**
+ * SALDI API CONFIGURATION (non-sensitive settings)
+ * Sensitive credentials (API_KEY) should be in _machine_config.php
+ */
+GlobalConfig::$SALDI_API_URL = 'https://ssl5.saldi.dk/finans/api/rest_api.php';
+GlobalConfig::$SALDI_DB = 'saldi_791';
+GlobalConfig::$SALDI_USER = 'admin';
+// API_KEY is set in _machine_config.php for security
+
+/**
  * ROUTE MAP
  * The route map connects URLs to Controller+Method and additionally maps the
  * wildcards to a named parameter so that they are accessible inside the
@@ -145,9 +154,10 @@ GlobalConfig::$ROUTE_MAP = array(
 	'GET:timeentry/(:num)' => array('route' => 'TimeEntry.SingleView', 'params' => array('id' => 1)),
 	'GET:api/timeentries' => array('route' => 'TimeEntry.Query'),
 	'POST:api/timeentry' => array('route' => 'TimeEntry.Create'),
+	'POST:api/timeentry/(:num)/invoice/1' => array('route' => 'TimeEntry.Invoice', 'params' => array('id' => 2)),
+	'POST:api/timeentry/(:num)/delete/1' => array('route' => 'TimeEntry.Delete', 'params' => array('id' => 2)),
 	'GET:api/timeentry/(:num)' => array('route' => 'TimeEntry.Read', 'params' => array('id' => 2)),
 	'POST:api/timeentry/(:num)' => array('route' => 'TimeEntry.Update', 'params' => array('id' => 2)),
-	'POST:api/timeentry/(:num)/delete/1' => array('route' => 'TimeEntry.Delete', 'params' => array('id' => 2)),
 	'GET:api/starttimetracking' => array('route' => 'TimeEntry.StartTimeTracking'),
 	'GET:api/stoptimetracking' => array('route' => 'TimeEntry.StopTimeTracking'),
 	'GET:api/checktimetracking' => array('route' => 'TimeEntry.CheckTimeTracking'),

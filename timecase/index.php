@@ -1,6 +1,11 @@
 <?php
-error_reporting(NULL);
+# error_reporting(NULL);
 /** @package    PROJECTS */
+
+error_log("====== REQUEST RECEIVED ======");
+error_log("URI: " . $_SERVER['REQUEST_URI']);
+error_log("METHOD: " . $_SERVER['REQUEST_METHOD']);
+error_log("REWRITE_COMMAND: " . (isset($_GET['_REWRITE_COMMAND']) ? $_GET['_REWRITE_COMMAND'] : 'NOT SET'));
 
 /* GlobalConfig object contains all configuration information for the app */
 include_once("_global_config.php");
@@ -18,6 +23,8 @@ require_once("verysimple/Phreeze/Dispatcher.php");
 // the global config is used for all dependency injection
 $gc = GlobalConfig::GetInstance();
 
+error_log("About to dispatch. Route map has " . count(GlobalConfig::$ROUTE_MAP) . " routes");
+
 try
 {
 	Dispatcher::Dispatch(
@@ -30,6 +37,7 @@ try
 }
 catch (exception $ex)
 {
+	error_log("ERROR outes");
 	$gc->GetRenderEngine()->assign("message",$ex->getMessage());
 	$gc->GetRenderEngine()->assign("stacktrace",$ex->getTraceAsString());
 	$gc->GetRenderEngine()->assign("code",$ex->getCode());

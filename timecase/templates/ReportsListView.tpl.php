@@ -166,22 +166,25 @@
 		<thead>
 			<tr>
 				<th>Customer</th>
+				<th>SALDi #</th>
 				<th id="header_ProjectId">Project<# if (page.orderBy == 'ProjectId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Att">Att</th>
 				<th id="header_UserId">User<# if (page.orderBy == 'UserId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_CategoryId">Work Type<# if (page.orderBy == 'CategoryId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
-				<th id="header_Description">Description<# if (page.orderBy == 'Description') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>			
+				<th id="header_Description">Description<# if (page.orderBy == 'Description') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Start">Start<# if (page.orderBy == 'Start') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_End">End<# if (page.orderBy == 'End') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Duration">Duration</th>
-				<th id="header_Invoiced">Invoiced</th>
 				<th id="header_Onsite">Onsite</th>
+				<th id="header_Invoiced">Invoiced</th>
+				<th id="header_Actions">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
 		<# items.each(function(item) { #>
 			<tr id="<#= _.escape(item.get('id')) #>">
 				<td><#= _.escape(item.get('customerName') || '') #></td>
+				<td><#= _.escape(item.get('saldiKundenr') || '') #></td>
 				<td><#= _.escape(item.get('projectTitle') || '') #></td>
 				<td><#= _.escape(item.get('att') || '') #></td>
 				<td><#= _.escape(item.get('userName') || '') #></td>
@@ -190,8 +193,9 @@
 				<td><#if (item.get('start')) { #><#= _date(app.parseDate(item.get('start'))).format('MMM D, H:mm') #><# } else { #>NULL<# } #></td>
 				<td><#if (item.get('end')) { #><#= _date(app.parseDate(item.get('end'))).format('MMM D, H:mm') #><# } else { #>NULL<# } #></td>
 				<td class="rtext"><#= _.escape(item.get('durationFormatted') || '') #></td>
-				<td><input type="checkbox" class="invoiced-checkbox" data-id="<#= _.escape(item.get('id')) #>" <# if (item.get('invoiced') == 1 || item.get('invoiced') == '1') { #>checked<# } #>></td>
 				<td><#= item.get('onsite') == 1 || item.get('onsite') == '1' ? '✓' : '​' #></td>
+				<td><input type="checkbox" class="invoiced-checkbox" data-id="<#= _.escape(item.get('id')) #>" <# if (item.get('invoiced') == 1 || item.get('invoiced') == '1') { #>checked<# } #>></td>
+				<td><# if ((item.get('invoiced') != 1 && item.get('invoiced') != '1') && item.get('saldiKundenr')) { #><button class="btn btn-xs btn-primary invoice-button" style="padding: 2px 6px; font-size: 11px;" data-id="<#= _.escape(item.get('id')) #>">Invoice</button><# } #></td>
 			</tr>
 		<# }); #>
 		</tbody>

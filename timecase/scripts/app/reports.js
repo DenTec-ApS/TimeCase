@@ -321,6 +321,53 @@ var page = {
 				}
 			});
 
+
+		// handle invoice button clicks
+		$('.invoice-button').on('click', function(e) {
+			e.preventDefault();
+			var $button = $(this);
+			var timeEntryId = parseInt($button.data('id'));
+
+			// Find the time entry in the collection
+			var timeEntry = page.timeEntries.find(function(item) { return parseInt(item.get('id')) === timeEntryId; });
+			if (!timeEntry) {
+				app.appendAlert('Time entry not found', 'alert-error', 3000, 'collectionAlert');
+				return;
+			}
+
+			// Disable button and show loading state
+			$button.prop('disabled', true);
+			$button.html('<i class="icon-spinner"></i> Invoicing...');
+
+			// Make API request to invoice the entry
+			$.ajax({
+				url: 'api/timeentry/' + timeEntryId + '/invoice/1',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(timeEntry.toJSON()),
+				success: function(response) {
+					app.appendAlert('Time entry has been invoiced successfully!', 'alert-success', 3000, 'collectionAlert');
+					// Update the time entry to marked as invoiced
+					timeEntry.set('invoiced', 1);
+					timeEntry.save({'invoiced': 1}, {
+						patch: true,
+						wait: true,
+						error: function(model, response) {
+							app.appendAlert('Invoice created but failed to update status', 'alert-warning', 3000, 'collectionAlert');
+						}
+					});
+					// Refresh the table
+					page.refreshData();
+				},
+				error: function(response) {
+					var errorMsg = app.getErrorMessage(response);
+					app.appendAlert('Error invoicing entry: ' + errorMsg, 'alert-error', 5000, 'collectionAlert');
+					// Re-enable button
+					$button.prop('disabled', false);
+					$button.html('<i class="icon-download"></i>&nbsp; Invoice');
+				}
+			});
+		});
 			page.isInitialized = true;
 			page.isInitializing = false;
 

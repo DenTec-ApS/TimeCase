@@ -42,20 +42,37 @@ class Dispatcher
 
 		list($controller_param,$method_param) = $router->GetRoute( $action );
 
+		// Log the matched route and method
+		error_log("====== DISPATCHER ROUTE MATCH ======");
+		error_log("Controller: " . $controller_param);
+		error_log("Method: " . $method_param);
+		error_log("Full Route: " . $controller_param . "." . $method_param);
+
 		// normalize the input
 		$controller_class = $controller_param."Controller";
 		$controller_file = "Controller/" . $controller_param . "Controller.php";
+		$actual_controller_file = $controller_file; // Track which file path we'll actually use
 
-		// look for the file in the expected places, hault if not found
-		if ( !(file_exists($controller_file) || file_exists("libs/".$controller_file)) )
-		{
-			// go to plan be, search the include path for the controller
+		error_log("DISPATCHER: Looking for controller file: " . $controller_file);
+
+		// look for the file in the expected places, halt if not found
+		if (file_exists($controller_file)) {
+			$actual_controller_file = $controller_file;
+			error_log("DISPATCHER: Found controller in current directory");
+		} else if (file_exists("libs/".$controller_file)) {
+			$actual_controller_file = "libs/".$controller_file;
+			error_log("DISPATCHER: Found controller in libs/ directory");
+		} else {
+			error_log("DISPATCHER: File not found in primary paths, searching include path");
+			// go to plan b, search the include path for the controller
 			$paths = explode(PATH_SEPARATOR,get_include_path());
 			$found = false;
 			foreach ($paths as $path)
 			{
 				if (file_exists($path ."/".$controller_file))
 				{
+					error_log("DISPATCHER: Found controller in include path: " . $path ."/".$controller_file);
+					$actual_controller_file = $path ."/".$controller_file;
 					$found = true;
 					break;
 				}
@@ -63,6 +80,7 @@ class Dispatcher
 
 			if (!$found) throw new Exception("File ~/libs/".$controller_file." was not found in include path");
 		}
+		error_log("DISPATCHER: Controller file exists at: " . $actual_controller_file);
 
 		// convert any php errors into an exception
 		if (self::$IGNORE_DEPRECATED)
@@ -76,26 +94,51 @@ class Dispatcher
 		}
 
 		// we should be fairly certain the file exists at this point
-		include_once($controller_file);
+		error_log("DISPATCHER: About to include controller file");
+		error_log("DISPATCHER: Current working directory: " . getcwd());
+		error_log("DISPATCHER: Full path to try: " . getcwd() . "/" . $actual_controller_file);
+		error_log("DISPATCHER: File readable: " . (is_readable($actual_controller_file) ? "yes" : "no"));
+
+		try {
+			include_once($actual_controller_file);
+			error_log("DISPATCHER: Controller file included successfully");
+		} catch (Throwable $ex) {
+			error_log("DISPATCHER: Exception/Error during include: " . $ex->getMessage());
+			error_log("DISPATCHER: Exception trace: " . $ex->getTraceAsString());
+			throw $ex;
+		}
 
 		// we found the file but the expected class doesn't appear to be defined
 		if (!class_exists($controller_class))
 		{
+			error_log("Controller file was found, but class '".$controller_class."' is not defined");
 			throw new Exception("Controller file was found, but class '".$controller_class."' is not defined");
 		}
-
+		error_log("DISPATCHER: Controller class exists");
 
 		// create an instance of the controller class
+		error_log("DISPATCHER: About to instantiate controller: " . $controller_class);
 		$controller = new $controller_class($phreezer,$renderEngine,$context,$router);
+		error_log("DISPATCHER: Controller instantiated");
 
 		// we have a valid instance, just verify there is a matching method
 		if (!is_callable(array($controller, $method_param)))
 		{
 			throw new Exception("'".$controller_class.".".$method_param."' is not a valid action");
 		}
+		error_log("DISPATCHER: Method is callable");
 
 		// file, class and method all are ok, go ahead and call it
-		call_user_func(array(&$controller, $method_param));
+		error_log("====== ABOUT TO CALL CONTROLLER METHOD ======");
+		error_log("Calling: " . $controller_class . "->" . $method_param . "()");
+		try {
+			call_user_func(array(&$controller, $method_param));
+		} catch (Exception $ex) {
+			error_log("====== EXCEPTION IN CONTROLLER METHOD ======");
+			error_log("Exception: " . $ex->getMessage());
+			error_log("Stack Trace: " . $ex->getTraceAsString());
+			throw $ex;
+		}
 
 		// reset error handling back to whatever it was
 		//restore_exception_handler();
@@ -122,5 +165,3 @@ class Dispatcher
 		ExceptionThrower::HandleError($code, $string, $file, $line, $context);
 	}
 }
-
-?>

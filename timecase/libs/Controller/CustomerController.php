@@ -206,6 +206,8 @@ class CustomerController extends AppBaseController
 			$customer->Tel2 = $this->SafeGetVal($json, 'tel2');
 			$customer->StatusId = $this->SafeGetVal($json, 'statusId');
 			$customer->Description = $this->SafeGetVal($json, 'description');
+			$saldiKundenr = $this->SafeGetVal($json, 'saldiKundenr');
+			$customer->SaldiKundenr = ($saldiKundenr === '' || $saldiKundenr === null) ? null : $saldiKundenr;
 
 			$customer->Password = $this->SafeGetVal($json, 'password');
 			if ($customer->Password != ''){
@@ -268,6 +270,8 @@ class CustomerController extends AppBaseController
 			$customer->Tel2 = $this->SafeGetVal($json, 'tel2', $customer->Tel2);
 			$customer->StatusId = $this->SafeGetVal($json, 'statusId', $customer->StatusId);
 			$customer->Description = $this->SafeGetVal($json, 'description', $customer->Description);
+			$saldiKundenr = $this->SafeGetVal($json, 'saldiKundenr', $customer->SaldiKundenr);
+			$customer->SaldiKundenr = ($saldiKundenr === '' || $saldiKundenr === null) ? null : $saldiKundenr;
 
 			$customer->Email = $this->SafeGetVal($json, 'email');
 			if ($customer->Email == '') $customer->Email = null;

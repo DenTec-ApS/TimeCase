@@ -232,6 +232,13 @@
 						<span class="help-inline"></span>
 					</div>
 				</div>
+				<div id="saldiKundenrInputContainer" class="control-group">
+					<label class="control-label" for="saldiKundenr">SALDi Customer Number</label>
+					<div class="controls inline-inputs">
+						<input type="text" class="input-xlarge" id="saldiKundenr" placeholder="SALDi Customer Number" value="<#= _.escape(item.get('saldiKundenr') || '') #>">
+						<span class="help-inline"></span>
+					</div>
+				</div>
 			</fieldset>
 		</form>
 

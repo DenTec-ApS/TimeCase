@@ -1,10 +1,15 @@
 <?php
 /** @package    PROJECTS::Controller */
 
+error_log("===== LOADING TIME ENTRY CONTROLLER =====");
 /** import supporting libraries */
 require_once("AppBaseController.php");
 require_once("Model/TimeEntry.php");
 require_once("Model/User.php");
+require_once("Model/Customer.php");
+error_log("===== Saldi service loading =====");
+require_once("util/SaldiService.php");
+error_log("===== loaded requirements =====");
 
 /**
  * TimeEntryController is the controller class for the TimeEntry object.  The
@@ -499,5 +504,175 @@ class TimeEntryController extends AppBaseController
 			$this->RenderExceptionJSON($ex);
 		}
 	}
+
+	/**
+	 * API Method for invoicing a time entry to Saldi
+	 */
+	public function Invoice()
+	{
+		error_log("====== INVOICE METHOD CALLED ======");
+		error_log("Current User: " . ($this->GetCurrentUser() ? $this->GetCurrentUser()->Username : 'Unknown'));
+		error_log("User Level ID: " . ($this->GetCurrentUser() ? $this->GetCurrentUser()->LevelId : 'Unknown'));
+
+		$this->RequirePermission(
+				self::$ROLE_ADMIN |
+				self::$ROLE_MANAGER |
+				self::$ROLE_ADVANCED_USER, 'User.LoginForm');
+
+		try
+		{
+			error_log("Invoice: Permission check passed");
+
+			$body = RequestUtil::GetBody();
+			error_log("Invoice: Request body: " . substr($body, 0, 200));
+
+			$json = json_decode($body);
+
+			if (!$json)
+			{
+				throw new Exception('The request body does not contain valid JSON. Body: ' . $body);
+			}
+
+			error_log("Invoice: JSON decoded successfully");
+
+			$pk = $this->GetRouter()->GetUrlParam('id');
+			error_log("Invoice: Processing time entry ID: " . $pk);
+			$timeentry = $this->Phreezer->Get('TimeEntry', intval($pk));
+
+			if (!$timeentry)
+			{
+				throw new Exception('Time entry not found');
+			}
+
+			error_log("Invoice: Found time entry, CustomerId: " . $timeentry->CustomerId);
+
+			// Load the customer to get Saldi customer number
+			$customerCriteria = new CustomerCriteria();
+			$customerCriteria->Id_Equals = $timeentry->CustomerId;
+			$customers = $this->Phreezer->Query('Customer', $customerCriteria);
+			$customer = $customers->Next();
+
+			if (!$customer)
+			{
+				throw new Exception('Customer not found with ID: ' . $timeentry->CustomerId);
+			}
+
+			if (!$customer->SaldiKundenr)
+			{
+				throw new Exception('Customer has no Saldi customer number (kontonr) configured');
+			}
+
+			error_log("Invoice: Found customer with SaldiKundenr: " . $customer->SaldiKundenr);
+
+
+			// Step 1: Fetch the customer data from Saldi
+			error_log("Invoice: Attempting to fetch Saldi customer data for kontonr: " . $customer->SaldiKundenr);
+			$saldiCustomer = SaldiService::fetchCustomerIdByKontonr($customer->SaldiKundenr);
+			if (!$saldiCustomer)
+			{
+				error_log("Invoice: Failed to find Saldi customer with kontonr: " . $customer->SaldiKundenr);
+				throw new Exception("Customer not found in Saldi system with kontonr: " . $customer->SaldiKundenr . ". Please verify the Saldi API is accessible.");
+			}
+			error_log("Invoice: Found Saldi customer: " . $saldiCustomer['firmanavn']);
+
+			// Step 2: Check if an order exists for this customer on this date
+			$orderDate = date('Y-m-d');
+			$existingOrderId = SaldiService::checkOrderExists($saldiCustomer['id'], $orderDate);
+
+			// Step 3: Create order if it doesn't exist
+			if (!$existingOrderId)
+			{
+				$orderData = [
+					'timeEntryId' => $timeentry->Id,
+					'saldiCustomerId' => $saldiCustomer['id'],
+					'kontonr' => $saldiCustomer['kontonr'],
+					'firmanavn' => $saldiCustomer['firmanavn'],
+					'addr1' => $saldiCustomer['addr1'] ?: '',
+					'addr2' => $saldiCustomer['addr2'] ?: '',
+					'postnr' => $saldiCustomer['postnr'] ?: '',
+					'bynavn' => $saldiCustomer['bynavn'] ?: '',
+					'land' => $saldiCustomer['land'] ?: '',
+					'tlf' => $saldiCustomer['tlf'] ?: '',
+					'email' => $saldiCustomer['email'] ?: '',
+					'betalingsbet' => $saldiCustomer['betalingsbet'] ?: 'Netto',
+					'betalingsdage' => $saldiCustomer['betalingsdage'] ?: 30,
+					'cvrnr' => $saldiCustomer['cvrnr'] ?: '',
+					'gruppe' => $saldiCustomer['gruppe'] ?: 1,
+					'ordredate' => $orderDate
+				];
+
+				$orderId = SaldiService::createOrder($orderData);
+				if (!$orderId)
+				{
+					throw new Exception('Failed to create order in Saldi');
+				}
+			}
+			else
+			{
+				$orderId = $existingOrderId;
+			}
+
+			// Get SKU
+			$user = strtolower($json->userName);
+			$sku = 500;
+			if ($user === "claus") {
+				$sku = 500;
+			} else if ($user === "magnus") {
+				$sku = 505;
+			} else if ($user === "peter") {
+				$sku = 501;
+			}
+			// Step 4: Add line item to the order
+			$startDate = date('d/m/Y', strtotime($timeentry->Start));
+			$lineItem = [
+				'productNumber' => $sku,
+				'quantity' => $json->duration/60,
+				'price' => 1200.00,
+				'description' => "Servicetime {$json->userName} - {$startDate} ({$json->durationFormatted})\n{$timeentry->Description}",
+			];
+
+			$addedLine = SaldiService::addOrderLine($orderId, $lineItem);
+			if (!$addedLine)
+			{
+				throw new Exception('Failed to add line item to order in Saldi');
+			}
+
+			if ($json->onsite) {
+				$lineItem = [
+					'productNumber' => "510",
+					'quantity' => 1,
+					'price' => 940.00,
+					'description' => "Kørsel",
+				];
 	
+				$addedLine = SaldiService::addOrderLine($orderId, $lineItem);
+				if (!$addedLine)
+				{
+					throw new Exception('Failed to add line item to order in Saldi');
+				}
+			}
+
+			// Mark time entry as invoiced
+			$timeentry->Invoiced = 1;
+			$timeentry->Save();
+
+			$output = new stdClass();
+			$output->success = true;
+			$output->message = 'Time entry successfully invoiced to Saldi';
+			$output->orderId = $orderId;
+			error_log("Invoice: SUCCESS - Order ID: " . $orderId);
+			$this->RenderJSON($output);
+		}
+		catch (Exception $ex)
+		{
+			error_log("====== INVOICE ERROR ======");
+			error_log("Exception Message: " . $ex->getMessage());
+			error_log("Exception Code: " . $ex->getCode());
+			error_log("Exception File: " . $ex->getFile());
+			error_log("Exception Line: " . $ex->getLine());
+			error_log("Stack Trace: " . $ex->getTraceAsString());
+			$this->RenderExceptionJSON($ex);
+		}
+	}
+
 }

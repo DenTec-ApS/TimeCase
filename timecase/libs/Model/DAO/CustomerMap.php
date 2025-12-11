@@ -39,6 +39,7 @@ class CustomerMap implements IDaoMap
 			$fm["Tel2"] = new FieldMap("Tel2","customers","tel2",false,FM_TYPE_VARCHAR,1000,null,false);
 			$fm["StatusId"] = new FieldMap("StatusId","customers","status_id",false,FM_TYPE_INT,10,null,false);
 			$fm["Description"] = new FieldMap("Description","customers","description",false,FM_TYPE_TEXT,null,null,false);
+			$fm["SaldiKundenr"] = new FieldMap("SaldiKundenr","customers","saldi_kundenr",false,FM_TYPE_VARCHAR,20,null,false);
 		}
 		return $fm;
 	}

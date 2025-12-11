@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `tel` varchar(1000) NOT NULL,
   `tel2` varchar(1000) NOT NULL,
   `description` text NOT NULL,
+  `saldi_kundenr` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `status_id` (`status_id`)

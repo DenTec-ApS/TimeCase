@@ -26,6 +26,7 @@ class TimeEntryReporter extends Reporter
 	public $ProjectTitle;
 	public $CustomerId;
 	public $CustomerName;
+	public $SaldiKundenr;
 	public $Duration;
 	public $DurationFormatted;
 	public $Location;
@@ -68,6 +69,7 @@ class TimeEntryReporter extends Reporter
 			projects.title as ProjectTitle,
 			customers.id as CustomerId,
 			customers.name as CustomerName,
+			customers.saldi_kundenr as SaldiKundenr,
 			time_entries.location as Location
 			,`time_entries`.`id` as Id
 			,`time_entries`.`project_id` as ProjectId

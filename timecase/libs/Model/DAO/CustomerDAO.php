@@ -53,6 +53,9 @@ class CustomerDAO extends Phreezable
 	/** @var string */
 	public $Description;
 
+	/** @var string */
+	public $SaldiKundenr;
+
 
 	/**
 	 * Returns a dataset of Projects objects with matching CustomerId

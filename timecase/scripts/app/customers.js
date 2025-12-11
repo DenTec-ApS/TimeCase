@@ -315,7 +315,8 @@ var page = {
 			'tel': $('input#tel').val(),
 			'tel2': $('input#tel2').val(),
 			'statusId': $('select#statusId').val(),
-			'description': $('textarea#description').val()
+			'description': $('textarea#description').val(),
+			'saldiKundenr': $('input#saldiKundenr').val()
 		}, {
 			wait: true,
 			success: function(){

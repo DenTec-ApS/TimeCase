@@ -71,6 +71,15 @@ class GlobalConfig
 	/** @var int if level 2 cache is specified, the timeout in seconds*/
 	public static $LEVEL_2_CACHE_TIMEOUT = 15;
 
+	/** @var string Saldi API URL (set in _app_config.php) */
+	public static $SALDI_API_URL;
+	/** @var string Saldi database name (set in _app_config.php) */
+	public static $SALDI_DB;
+	/** @var string Saldi username (set in _app_config.php) */
+	public static $SALDI_USER;
+	/** @var string Saldi API key (set in _machine_config.php - DO NOT COMMIT) */
+	public static $SALDI_API_KEY;
+
 	private static $INSTANCE;
 	private static $IS_INITIALIZED = false;
 
