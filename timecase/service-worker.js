@@ -1,4 +1,4 @@
-const CACHE_NAME = 'timecase-v22';
+const CACHE_NAME = 'timecase-v23';
 const urlsToCache = [
   '/styles/style.css',
   '/bootstrap/css/bootstrap.min.css',
