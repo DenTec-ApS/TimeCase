@@ -65,7 +65,7 @@ class SaldiService {
 			'key' => $config['api_key'],
 			'select' => 'id,ordrenr',
 			'from' => 'ordrer',
-			'where' => "konto_id=" . intval($customerId) . " AND ordredate='" . addslashes($date) . "' AND art='DO'",
+			'where' => "konto_id=" . intval($customerId) . " AND ordredate='" . addslashes($date) . "' AND art='DO' AND (status = 1 OR status = 0)",
 			'limit' => '1'
 		);
 
