@@ -38,6 +38,7 @@ class TimeEntryReporter extends Reporter
 	public $End;
 	public $Description;
 	public $Invoiced;
+	public $Onsite;
 	public $Att;
 
 	/*
@@ -79,6 +80,7 @@ class TimeEntryReporter extends Reporter
 
 			,`time_entries`.`description` as Description
 			,`time_entries`.`invoiced` as Invoiced
+			,`time_entries`.`onsite` as Onsite
 			,`time_entries`.`att` as Att
 		from `time_entries`
 		inner join categories on categories.id = time_entries.category_id

@@ -315,6 +315,15 @@
 						</label>
 					</div>
 				</div>
+				<div id="onsiteInputContainer" class="control-group">
+					<label class="control-label" for="onsite">Onsite</label>
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" id="onsite" name="onsite" <# if (item.get('onsite') == 1 || item.get('onsite') == '1') { #>checked<# } #>>
+							<span class="help-inline"></span>
+						</label>
+					</div>
+				</div>
 				<div id="attInputContainer" class="control-group">
 					<label class="control-label" for="att">Att</label>
 					<div class="controls inline-inputs">

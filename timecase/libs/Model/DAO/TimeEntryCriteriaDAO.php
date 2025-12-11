@@ -135,7 +135,37 @@ class TimeEntryCriteriaDAO extends Criteria
 	public $Location_IsEmpty;
 	public $Location_BitwiseOr;
 	public $Location_BitwiseAnd;
-	
+	public $Invoiced_Equals;
+	public $Invoiced_NotEquals;
+	public $Invoiced_IsLike;
+	public $Invoiced_IsNotLike;
+	public $Invoiced_BeginsWith;
+	public $Invoiced_EndWith;
+	public $Invoiced_GreaterThan;
+	public $Invoiced_GreaterThanOrEqual;
+	public $Invoiced_LessThan;
+	public $Invoiced_LessThanOrEqual;
+	public $Invoiced_In;
+	public $Invoiced_IsNotEmpty;
+	public $Invoiced_IsEmpty;
+	public $Invoiced_BitwiseOr;
+	public $Invoiced_BitwiseAnd;
+	public $Onsite_Equals;
+	public $Onsite_NotEquals;
+	public $Onsite_IsLike;
+	public $Onsite_IsNotLike;
+	public $Onsite_BeginsWith;
+	public $Onsite_EndWith;
+	public $Onsite_GreaterThan;
+	public $Onsite_GreaterThanOrEqual;
+	public $Onsite_LessThan;
+	public $Onsite_LessThanOrEqual;
+	public $Onsite_In;
+	public $Onsite_IsNotEmpty;
+	public $Onsite_IsEmpty;
+	public $Onsite_BitwiseOr;
+	public $Onsite_BitwiseAnd;
+
 	public $Special;
 
 }

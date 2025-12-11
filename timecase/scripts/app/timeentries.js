@@ -1025,6 +1025,7 @@ var page = {
 			'end': formatDateForServer(end_date),
 			'description': $('textarea#description').val(),
 			'invoiced': $('#invoiced').prop('checked') ? 1 : 0,
+			'onsite': $('#onsite').prop('checked') ? 1 : 0,
 			'att': $('input#att').val()
 		}, {
 			wait: true,

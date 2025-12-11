@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS `time_entries` (
   `description` text NOT NULL,
   `location` varchar(50) DEFAULT NULL,
   `invoiced` tinyint(1) NOT NULL DEFAULT '0',
+  `onsite` tinyint(1) NOT NULL DEFAULT '0',
   `att` text,
   PRIMARY KEY (`id`),
   KEY `project_id` (`project_id`),

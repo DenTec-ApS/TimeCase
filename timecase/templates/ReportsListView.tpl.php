@@ -175,6 +175,7 @@
 				<th id="header_End">End<# if (page.orderBy == 'End') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Duration">Duration</th>
 				<th id="header_Invoiced">Invoiced</th>
+				<th id="header_Onsite">Onsite</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -190,6 +191,7 @@
 				<td><#if (item.get('end')) { #><#= _date(app.parseDate(item.get('end'))).format('MMM D, H:mm') #><# } else { #>NULL<# } #></td>
 				<td class="rtext"><#= _.escape(item.get('durationFormatted') || '') #></td>
 				<td><input type="checkbox" class="invoiced-checkbox" data-id="<#= _.escape(item.get('id')) #>" <# if (item.get('invoiced') == 1 || item.get('invoiced') == '1') { #>checked<# } #>></td>
+				<td><#= item.get('onsite') == 1 || item.get('onsite') == '1' ? '✓' : '​' #></td>
 			</tr>
 		<# }); #>
 		</tbody>
