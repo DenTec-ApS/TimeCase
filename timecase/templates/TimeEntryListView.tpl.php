@@ -270,24 +270,9 @@
 						<span class="help-inline"></span>
 					</div>
 				</div>
-				<div id="projectFieldsToggleContainer" class="control-group">
-					<label class="control-label" for="projectFieldsToggle"></label>
-					<div class="controls">
-						<label class="checkbox">
-							<input type="checkbox" id="projectFieldsToggle" name="projectFieldsToggle"> Show Project Fields
-						</label>
-					</div>
-				</div>
-				<div id="filterCustomerIdTEInputContainer" class="control-group" style="display:none;">
-					<label class="control-label" for="filterCustomerIdTE">Customer Filter</label>
-					<div class="controls inline-inputs">
-						<select id="filterCustomerIdTE" name="filterCustomerIdTE"></select>
-						<span class="help-inline"></span>
-					</div>
-				</div>
-				<div id="projectIdInputContainer" class="control-group" style="display:none;">
+				<div id="projectIdInputContainer" class="control-group">
 					<label class="control-label" for="projectId">Project (Optional)</label>
-					<div id="parentProjectIdTE" class="controls inline-inputs">
+					<div id="parentProjectId" class="controls inline-inputs">
 						<select id="projectId" name="projectId"></select>
 						<span class="help-inline"></span>
 					</div>
@@ -296,6 +281,13 @@
 					<label class="control-label" for="categoryId">Work Type</label>
 					<div class="controls inline-inputs">
 						<select id="categoryId" name="categoryId"></select>
+						<span class="help-inline"></span>
+					</div>
+				</div>
+				<div id="attInputContainer" class="control-group">
+					<label class="control-label" for="att">Att</label>
+					<div class="controls inline-inputs">
+						<input type="text" class="input-xlarge" id="att" value="<#= _.escape(item.get('att') || '') #>">
 						<span class="help-inline"></span>
 					</div>
 				</div>
@@ -313,13 +305,6 @@
 							<input type="checkbox" id="onsite" name="onsite" <# if (item.get('onsite') == 1 || item.get('onsite') == '1') { #>checked<# } #>>
 							<span class="help-inline"></span>
 						</label>
-					</div>
-				</div>
-				<div id="attInputContainer" class="control-group">
-					<label class="control-label" for="att">Att</label>
-					<div class="controls inline-inputs">
-						<input type="text" class="input-xlarge" id="att" value="<#= _.escape(item.get('att') || '') #>">
-						<span class="help-inline"></span>
 					</div>
 				</div>
 			</fieldset>

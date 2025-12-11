@@ -229,27 +229,6 @@ var page = {
 			stopTimer();
 		});
 		
-		// toggle project fields visibility (using event delegation for modal content)
-		$(document).on('change', '#projectFieldsToggle', function() {
-			if ($(this).prop('checked')) {
-				$('#filterCustomerIdTEInputContainer').slideDown();
-				$('#projectIdInputContainer').slideDown();
-			} else {
-				$('#filterCustomerIdTEInputContainer').slideUp();
-				$('#projectIdInputContainer').slideUp();
-			}
-		});
-
-		// auto-enable project fields if project is populated
-		$(document).on('change', '#projectId', function() {
-			var projectValue = $(this).val();
-			if (projectValue && projectValue !== '') {
-				$('#projectFieldsToggle').prop('checked', true);
-				$('#filterCustomerIdTEInputContainer').slideDown();
-				$('#projectIdInputContainer').slideDown();
-			}
-		});
-
 		// handle invoiced checkbox changes in the table
 		$(document).on('change', '.invoiced-checkbox', function() {
 			var $checkbox = $(this);
@@ -672,13 +651,7 @@ var page = {
 			if (g_level_id != 1 && g_level_id != 2){
 				html = $(html).find('#userIdInputContainer').remove().end();
 			}
-			
-			// hide some fields for if not admin or manager or regular user
-			if (g_level_id != 1 && g_level_id != 2 && g_level_id != 4){
-				html = $(html).find('#filterCustomerIdTEInputContainer').remove().end();
-			}
-			
-			
+
 			return html;
 		}
 
@@ -786,49 +759,52 @@ var page = {
 			});
 		}
 		
-		// customer changed action
-		$("#filterCustomerIdTEInputContainer input, #filterCustomerIdTEInputContainer select").change(function(e) {
+		// customer changed action - filters projects by selected customer
+		$("#customerId").change(function(e) {
 				e.preventDefault();
 				app.showProgress('modelLoader');
-				
+
 				// on customer change update projects combo so it displays only related projects
 				var customerId = $(this).val();
-				
+				var currentProjectId = page.timeEntry.get('projectId');
+
 				// reset combo select for projectId
-				$('#parentProjectIdTE select option').remove();
-				$('#parentProjectIdTE ul li').remove();
-					
+				$('#parentProjectId select option').remove();
+				$('#parentProjectId ul li').remove();
+
 				// populate new dropdown options for projectId based on customerId
 				var projectIdValues = new model.ProjectCollection();
 				projectIdValues.fetch({
 					success: function(c){
-						
+
 						$('#projectId *').remove();
-						var dd = $('#projectId');							
+						var dd = $('#projectId');
 						dd.append('<option value=""></option>');
 						c.forEach(function(item,index)
 						{
 							// add only projects related to this customer or all in blank
 							if (customerId == '' || item.get('customerId') == customerId){
+								// Set as selected if it matches the current project
+								var isSelected = currentProjectId && item.get('id') == currentProjectId;
 								dd.append(app.getOptionHtml(
 										item.get('id'),
 										item.get('title'), // TODO: change fieldname if the dropdown doesn't show the desired column
-										false // no defaults
+										isSelected
 									));
-							}	
-								
+							}
+
 						});
-						
+
 						if (!app.browserSucks())
 						{
 							// refresh bootstrap combo
 							dd.data('combobox').refresh()
 							$('div.combobox-container + span.help-inline').hide(); // TODO: hack because combobox is making the inline help div have a height
 						}
-						
+
 						app.hideProgress('modelLoader');
 						return true;
-						
+
 
 					},
 					error: function(collection,response,scope){
@@ -836,7 +812,7 @@ var page = {
 						return false;
 					}
 				});
-					
+
 				app.hideProgress('modelLoader');
 		});
 		
@@ -863,13 +839,6 @@ var page = {
 				{
 					dd.combobox();
 					$('div.combobox-container + span.help-inline').hide(); // TODO: hack because combobox is making the inline help div have a height
-				}
-
-				// auto-enable project fields if project is populated (only for existing records)
-				if (isExistingRecord && page.timeEntry.get('projectId') && page.timeEntry.get('projectId') !== '') {
-					$('#projectFieldsToggle').prop('checked', true);
-					$('#filterCustomerIdTEInputContainer').slideDown();
-					$('#projectIdInputContainer').slideDown();
 				}
 
 			},
@@ -926,6 +895,11 @@ var page = {
 				{
 					dd.combobox();
 					$('div.combobox-container + span.help-inline').hide();
+				}
+
+				// Trigger project filtering based on current customer
+				if (page.timeEntry.get('customerId')) {
+					$('#customerId').trigger('change');
 				}
 
 			},
@@ -1006,11 +980,8 @@ var page = {
 
 		app.showProgress('modelLoader');
 
-		// Check if project fields should be included
-		var projectId = '';
-		if ($('#projectFieldsToggle').prop('checked')) {
-			projectId = $('select#projectId').val();
-		}
+		// Get the project id from the dropdown
+		var projectId = $('select#projectId').val();
 
 		var start_date = getDateFromInput('input#start', 'input#start-time');
 		var end_date = getDateFromInput('input#end', 'input#end-time');
