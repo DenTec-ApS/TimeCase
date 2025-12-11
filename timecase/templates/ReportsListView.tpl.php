@@ -61,7 +61,7 @@
 	<div class="control-group pull-left" id="filterStartInputContainer">
 		<label for="start" class="control-label">From</label>
 		<div class="controls ">
-			<input type="text" value="<?php echo date('d-m-y')?>" id="start" class="date-picker input-large"> 
+			<input type="text" value="<?php echo date('d-m-y', strtotime('first day of this month'))?>" id="start" class="date-picker input-large">
 			<input type="text" class="time-picker input-xlarge" id="start-time" value="00:00">
 			<span class="help-inline"></span>
 		</div>
@@ -69,7 +69,7 @@
 	<div class="control-group pull-left" id="filterEndInputContainer">
 		<label for="end" class="control-label">To</label>
 		<div class="controls ">
-			<input type="text" value="<?php echo date('d-m-y')?>" id="end" class="date-picker input-large">
+			<input type="text" value="<?php echo date('d-m-y', strtotime('last day of this month'))?>" id="end" class="date-picker input-large">
 			<input type="text" class="time-picker input-xlarge" id="end-time" value="23:59">
 			<span class="help-inline"></span>
 		</div>

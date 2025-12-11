@@ -170,7 +170,7 @@ var page = {
 					break;
 				case 'thismonth':
 					start = new Date(today.getFullYear(), today.getMonth(), 1);
-					end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+					end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 					break;
 				case 'lastmonth':
 					start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -231,7 +231,7 @@ var page = {
 					break;
 				case 'thismonth':
 					start = new Date(today.getFullYear(), today.getMonth(), 1);
-					end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+					end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 					break;
 				case 'lastmonth':
 					start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
