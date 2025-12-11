@@ -1015,6 +1015,9 @@ var page = {
 		var start_date = getDateFromInput('input#start', 'input#start-time');
 		var end_date = getDateFromInput('input#end', 'input#end-time');
 
+		// For invoiced: set to 0 for new entries, keep current value for updates
+		var invoicedValue = isNew ? 0 : page.timeEntry.get('invoiced');
+
 		page.timeEntry.save({
 
 			'projectId': projectId,
@@ -1024,7 +1027,7 @@ var page = {
 			'start': formatDateForServer(start_date),
 			'end': formatDateForServer(end_date),
 			'description': $('textarea#description').val(),
-			'invoiced': $('#invoiced').prop('checked') ? 1 : 0,
+			'invoiced': invoicedValue,
 			'onsite': $('#onsite').prop('checked') ? 1 : 0,
 			'att': $('input#att').val()
 		}, {
