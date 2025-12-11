@@ -884,9 +884,18 @@ var page = {
 				c.forEach(function(item,index)
 				{
 					var selected = page.timeEntry.get('customerId') == item.get('id');
+					// Build customer display with location and address
+					var customerDisplay = item.get('name');
+					var location = item.get('location');
+					var address = item.get('address');
+					if (location || address) {
+						customerDisplay += ' - ';
+						if (address) customerDisplay += address;
+						if (location) customerDisplay += ', ' + location;
+					}
 					dd.append(app.getOptionHtml(
 						item.get('id'),
-						item.get('name'),
+						customerDisplay,
 						selected
 					));
 				});
