@@ -165,6 +165,40 @@ class SaldiService {
 	}
 
 	/**
+	 * Fetch all customers from Saldi with pagination
+	 * @param int $limit Number of records to fetch per request
+	 * @param int $offset Starting record offset
+	 * @return array|null Array of customer records or null on error
+	 */
+	public static function getCustomers($limit = 500, $offset = 0) {
+		$config = self::getConfig();
+		$params = array(
+			'action' => 'fetch_from_table',
+			'db' => $config['db'],
+			'saldiuser' => $config['user'],
+			'key' => $config['api_key'],
+			'select' => "id,kontonr,firmanavn,cvrnr,addr1,addr2,postnr,bynavn,land,tlf,email,betalingsbet,betalingsdage,gruppe",
+			'from' => "adresser",
+			'where' => "art = 'D'",
+			'limit' => $limit . " offset " . $offset,
+		);
+
+		error_log("SaldiService::getCustomers - Fetching customers. Limit: $limit, Offset: $offset");
+		$response = self::makeRequest($params);
+		error_log("SaldiService::getCustomers - Response: " . print_r($response, true));
+
+		if ($response && isset($response[1]) && is_array($response[1])) {
+			error_log("SaldiService::getCustomers - Successfully fetched customers");
+			// Return all customer records (response[1] onwards, excluding response[0] which are headers)
+			array_shift($response); // Remove headers
+			array_pop($response);   // Remove trailing false value
+			return $response;
+		}
+		error_log("SaldiService::getCustomers - Failed to fetch customers or empty result set");
+		return null;
+	}
+
+	/**
 	 * Make HTTP request to Saldi API
 	 * @param array $params Query parameters
 	 * @return mixed Decoded JSON response or false on error

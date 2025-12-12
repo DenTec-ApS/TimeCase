@@ -46,6 +46,12 @@ var page = {
 			page.dialogIsOpen = false;
 		});
 
+		// make the sync button clickable
+		$("#syncCustomersButton").click(function(e) {
+			e.preventDefault();
+			page.syncCustomersFromSaldi();
+		});
+
 		// save the model when the save button is clicked
 		$("#saveCustomerButton").click(function(e) {
 			e.preventDefault();
@@ -383,6 +389,60 @@ var page = {
 			error: function(model,response,scope){
 				app.appendAlert(app.getErrorMessage(response), 'alert-error',0,'modelAlert');
 				app.hideProgress('modelLoader');
+			}
+		});
+	},
+
+	/**
+	 * Sync customers from Saldi API
+	 */
+	syncCustomersFromSaldi: function()
+	{
+		// Show confirmation dialog
+		if (!confirm('This will sync all customers from Saldi. Continue?')) {
+			return;
+		}
+
+		app.showProgress('loader');
+
+		$.ajax({
+			url: '/api/customer/syncfromsaldi',
+			type: 'POST',
+			dataType: 'json',
+			success: function(data) {
+				app.hideProgress('loader');
+
+				if (data.success) {
+					var stats = data.stats;
+					var message = 'Sync completed successfully!\n' +
+						'Created: ' + stats.created + '\n' +
+						'Updated: ' + stats.updated + '\n' +
+						'Skipped: ' + stats.skipped + '\n' +
+						'Errors: ' + stats.errors + '\n' +
+						'Batches processed: ' + stats.batchesProcessed;
+
+					if (stats.errors > 0 && stats.errorMessages.length > 0) {
+						message += '\n\nErrors:\n' + stats.errorMessages.join('\n');
+					}
+
+					alert(message);
+
+					// Reload the customer list
+					page.fetchCustomers(page.fetchParams, true);
+				} else {
+					alert('Sync failed: ' + data.message);
+				}
+			},
+			error: function(xhr, status, error) {
+				app.hideProgress('loader');
+				var errorMsg = 'Sync failed with error: ' + error;
+				try {
+					var response = JSON.parse(xhr.responseText);
+					if (response.message) {
+						errorMsg = 'Sync failed: ' + response.message;
+					}
+				} catch (e) {}
+				alert(errorMsg);
 			}
 		});
 	}

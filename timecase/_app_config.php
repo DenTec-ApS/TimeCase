@@ -127,6 +127,7 @@ GlobalConfig::$ROUTE_MAP = array(
 	'GET:api/customer/(:num)' => array('route' => 'Customer.Read', 'params' => array('id' => 2)),
 	'POST:api/customer/(:num)' => array('route' => 'Customer.Update', 'params' => array('id' => 2)),
 	'POST:api/customer/(:num)/delete/1' => array('route' => 'Customer.Delete', 'params' => array('id' => 2)),
+	'POST:api/customer/syncfromsaldi' => array('route' => 'Customer.SyncFromSaldi'),
 		
 	// Level
 	'GET:api/levels' => array('route' => 'Level.Query'),

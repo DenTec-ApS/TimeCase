@@ -55,6 +55,9 @@
 	<p id="newButtonContainer" class="buttonContainer">
 		<button id="newCustomerButton" class="btn btn-primary btn-sidebar"><i class="icon-plus"></i>&nbsp; Add Customer</button>
 	</p>
+	<p id="syncButtonContainer" class="buttonContainer">
+		<button id="syncCustomersButton" class="btn btn-info btn-sidebar"><i class="icon-refresh"></i>&nbsp; Sync from Saldi</button>
+	</p>
 	<hr>
 	
 <?php $this->display('_SidebarCommon.tpl.php');?>

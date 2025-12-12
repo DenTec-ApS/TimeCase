@@ -6,6 +6,7 @@ require_once("AppBaseController.php");
 require_once("Model/Customer.php");
 require_once("Model/TimeEntry.php");
 require_once("util/password.php");
+require_once("util/SaldiService.php");
 
 /**
  * CustomerController is the controller class for the Customer object.  The
@@ -328,6 +329,175 @@ class CustomerController extends AppBaseController
 		}
 		catch (Exception $ex)
 		{
+			$this->RenderExceptionJSON($ex);
+		}
+	}
+
+	/**
+	 * API Method syncs all customers from Saldi API to TimeCase database
+	 * Automatically pages through entire Saldi customer database
+	 */
+	public function SyncFromSaldi()
+	{
+		$this->RequirePermission(self::$ROLE_ADMIN, 'User.LoginForm');
+
+		// Increase execution time limit for full database sync
+		set_time_limit(0); // No time limit for this operation
+
+		try
+		{
+			$limit = 500;
+			$offset = 0;
+			$totalStats = array(
+				'created' => 0,
+				'updated' => 0,
+				'skipped' => 0,
+				'errors' => 0,
+				'errorMessages' => array(),
+				'batchesProcessed' => 0
+			);
+
+			error_log("CustomerController::SyncFromSaldi - Starting full sync");
+
+			// Loop until no more customers are returned
+			while (true) {
+				error_log("CustomerController::SyncFromSaldi - Fetching batch at offset: $offset");
+
+				// Fetch customers from Saldi
+				$saldiCustomers = SaldiService::getCustomers($limit, $offset);
+
+				if (!$saldiCustomers || count($saldiCustomers) === 0) {
+					error_log("CustomerController::SyncFromSaldi - No more customers to fetch, sync complete");
+					break;
+				}
+
+				$totalStats['batchesProcessed']++;
+
+				// Process each customer in this batch
+				foreach ($saldiCustomers as $saldiCustomer) {
+					try {
+						// Validate required fields
+						if (!isset($saldiCustomer['id']) || !isset($saldiCustomer['kontonr']) || !isset($saldiCustomer['firmanavn'])) {
+							error_log("WARNING: Skipping customer with missing required fields");
+							$totalStats['skipped']++;
+							continue;
+						}
+
+						$saldiId = $saldiCustomer['id'];
+						$kontonr = $saldiCustomer['kontonr'];
+
+						// Check if customer already exists by saldi_kundenr
+						$criteria = new CustomerCriteria();
+						$criteria->SaldiKundenr_Equals = $kontonr;
+						$existingCustomers = $this->Phreezer->Query('Customer', $criteria);
+
+						if ($existingCustomers->Count() > 0) {
+							// Update existing customer only if fields have changed
+							$customer = $existingCustomers->Next();
+							$hasChanges = false;
+							$changes = array();
+
+							$newName = $saldiCustomer['firmanavn'];
+							if ($customer->Name !== $newName) {
+								$changes[] = "Name: '" . $customer->Name . "' -> '" . $newName . "'";
+								$customer->Name = $newName;
+								$hasChanges = true;
+							}
+
+							if ($customer->ContactPerson !== $newName) {
+								$changes[] = "ContactPerson: '" . $customer->ContactPerson . "' -> '" . $newName . "'";
+								$customer->ContactPerson = $newName;
+								$hasChanges = true;
+							}
+
+							$newEmail = (isset($saldiCustomer['email']) && $saldiCustomer['email']) ? $saldiCustomer['email'] : null;
+							if ($customer->Email !== $newEmail) {
+								$changes[] = "Email: '" . ($customer->Email ?: 'NULL') . "' -> '" . ($newEmail ?: 'NULL') . "'";
+								$customer->Email = $newEmail;
+								$hasChanges = true;
+							}
+
+							$newAddress = isset($saldiCustomer['addr1']) ? $saldiCustomer['addr1'] : $customer->Address;
+							if ($customer->Address !== $newAddress) {
+								$changes[] = "Address: '" . $customer->Address . "' -> '" . $newAddress . "'";
+								$customer->Address = $newAddress;
+								$hasChanges = true;
+							}
+
+							$newLocation = isset($saldiCustomer['bynavn']) ? $saldiCustomer['bynavn'] : $customer->Location;
+							if ($customer->Location !== $newLocation) {
+								$changes[] = "Location: '" . $customer->Location . "' -> '" . $newLocation . "'";
+								$customer->Location = $newLocation;
+								$hasChanges = true;
+							}
+
+							$newTel = isset($saldiCustomer['tlf']) ? $saldiCustomer['tlf'] : $customer->Tel;
+							if ($customer->Tel !== $newTel) {
+								$changes[] = "Tel: '" . $customer->Tel . "' -> '" . $newTel . "'";
+								$customer->Tel = $newTel;
+								$hasChanges = true;
+							}
+
+							$newDescription = 'Saldi ID: ' . $saldiId;
+							if ($customer->Description !== $newDescription) {
+								$changes[] = "Description: '" . $customer->Description . "' -> '" . $newDescription . "'";
+								$customer->Description = $newDescription;
+								$hasChanges = true;
+							}
+
+							if ($hasChanges) {
+								$customer->Save();
+								$totalStats['updated']++;
+								error_log("Updated customer ID " . $customer->Id . " (Saldi: $saldiId, Kontonr: $kontonr) - Changes: " . implode("; ", $changes));
+							} else {
+								# error_log("No changes detected for customer ID " . $customer->Id . " (Saldi: $saldiId, Kontonr: $kontonr)");
+							}
+						} else {
+							// Create new customer
+							$customer = new Customer($this->Phreezer);
+							$customer->Name = $saldiCustomer['firmanavn'];
+							$customer->ContactPerson = $saldiCustomer['firmanavn'];
+							$customer->Email = (isset($saldiCustomer['email']) && $saldiCustomer['email']) ? $saldiCustomer['email'] : null;
+							$customer->Password = '';
+							$customer->AllowLogin = 0;
+							$customer->Address = isset($saldiCustomer['addr1']) ? $saldiCustomer['addr1'] : '';
+							$customer->Location = isset($saldiCustomer['bynavn']) ? $saldiCustomer['bynavn'] : '';
+							$customer->Web = isset($saldiCustomer['land']) ? $saldiCustomer['land'] : 'DK';
+							$customer->Tel = isset($saldiCustomer['tlf']) ? $saldiCustomer['tlf'] : '';
+							$customer->Tel2 = isset($saldiCustomer['addr2']) ? $saldiCustomer['addr2'] : '';
+							$customer->StatusId = 2; // Default to active status
+							$customer->Description = 'Saldi ID: ' . $saldiId . ', CVR: ' . (isset($saldiCustomer['cvrnr']) ? $saldiCustomer['cvrnr'] : 'N/A');
+							$customer->SaldiKundenr = $kontonr;
+							$customer->Save();
+							$totalStats['created']++;
+							error_log("Created new customer (Saldi: $saldiId, Kontonr: $kontonr)");
+						}
+					} catch (Exception $e) {
+						$totalStats['errors']++;
+						$errorMsg = "Error processing customer: " . $e->getMessage();
+						$totalStats['errorMessages'][] = $errorMsg;
+						error_log($errorMsg);
+					}
+				}
+
+				// Move to next batch
+				$offset += $limit;
+			}
+
+			error_log("Sync completed - Batches: " . $totalStats['batchesProcessed'] . ", Created: " . $totalStats['created'] . ", Updated: " . $totalStats['updated'] . ", Skipped: " . $totalStats['skipped'] . ", Errors: " . $totalStats['errors']);
+
+			// Prepare output
+			$output = new stdClass();
+			$output->success = true;
+			$output->stats = $totalStats;
+			$output->message = "Successfully synced customers from Saldi";
+
+			$this->RenderJSON($output, $this->JSONPCallback());
+
+		}
+		catch (Exception $ex)
+		{
+			error_log("SyncFromSaldi Exception: " . $ex->getMessage());
 			$this->RenderExceptionJSON($ex);
 		}
 	}
