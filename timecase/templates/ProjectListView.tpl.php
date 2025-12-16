@@ -84,6 +84,7 @@
 -->
 				<th id="header_Title"><i class="icon-reorder"></i>&nbsp; Title<# if (page.orderBy == 'Title') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_CustomerId"><i class="icon-group"></i>&nbsp; Customer<# if (page.orderBy == 'CustomerId') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
+				<th id="header_Created"><i class="icon-reorder"></i>&nbsp; Created<# if (page.orderBy == 'Created') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Deadline"><i class="icon-warning-sign"></i>&nbsp; Deadline Date<# if (page.orderBy == 'Deadline') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th><i class="icon-warning-sign"></i>&nbsp; Deadline<# if (page.orderBy == 'DeadlineApproach') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
 				<th id="header_Progress"><i class="icon-signal"></i>&nbsp; Progress<# if (page.orderBy == 'Progress') { #> <i class='icon-arrow-<#= page.orderDesc ? 'up' : 'down' #>' /><# } #></th>
@@ -104,13 +105,13 @@
 -->
 				<td><#= _.escape(item.get('title') || '') #></td>
 				<td><#= _.escape(item.get('customerName') || '') #></td>
+				<td><#if (item.get('created')) { #><#= _date(app.parseDate(item.get('created'))).format('MMM D, YYYY H:mm') #><# } else { #>NULL<# } #></td>
 				<td><#if (item.get('deadline')) { #><#= _date(app.parseDate(item.get('deadline'))).format('MMM D, YYYY H:mm') #><# } else { #>NULL<# } #></td>
 				<td><div class="progress progress-striped"><div class="bar" style="width: <#= _.escape(item.get('deadlineApproach') || '') #>%;"></div></div></td>
 				<td><div class="progress progress-striped"><div class="bar" style="width: <#= _.escape(item.get('progress') || '') #>%;"></div></div></td>
 				<td><#= _.escape(item.get('statusDescription') || '') #></td>
 			<td><#= app.formatHours(item.get('totalHours') || 0) #></td>
 <!-- UNCOMMENT TO SHOW ADDITIONAL COLUMNS
-				<td><#if (item.get('created')) { #><#= _date(app.parseDate(item.get('created'))).format('MMM D, YYYY H:mm') #><# } else { #>NULL<# } #></td>
 				<td><#if (item.get('closed')) { #><#= _date(app.parseDate(item.get('closed'))).format('MMM D, YYYY H:mm') #><# } else { #>NULL<# } #></td>
 				<td><#= _.escape(item.get('description') || '') #></td>
 -->
